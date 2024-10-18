@@ -15,7 +15,7 @@
 -- |  | |___| | |_| \__ \ ||  __/ |                        |
 -- |   \____|_|\__,_|___/\__\___|_|                        |
 -- |                                                       |
--- | Powered by Cloudnative PG (https://cloudnative-pg.io) |
+-- | Powered by CloudNative PG (https://cloudnative-pg.io) |
 -- | Created by Felipe Vilarinho (me@vila.net.br)          |
 -- '-------------------------------------------------------'
 
