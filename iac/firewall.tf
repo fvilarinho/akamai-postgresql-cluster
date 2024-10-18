@@ -42,8 +42,6 @@ resource "linode_firewall" "default" {
 
   depends_on = [
     data.http.myIp,
-    data.external.fetchStackHostnames,
-    data.linode_nodebalancers.default,
-    null_resource.applyStackManifest
+    data.linode_nodebalancers.default
   ]
 }

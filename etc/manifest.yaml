@@ -5,12 +5,12 @@ metadata:
   name: ${LABEL}
 spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:${VERSION}
-  imagePullPolicy: always
+  imagePullPolicy: Always
   instances: ${NODES_COUNT}
   monitoring:
     enablePodMonitor: true
   storage:
-    size: ${STORAGE_DATA_SIZE}Gi
+    size: ${STORAGE_SIZE}Gi
 ---
 apiVersion: v1
 kind: Service

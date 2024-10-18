@@ -33,7 +33,6 @@ resource "linode_domain_record" "primary" {
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
-    null_resource.applyStackManifest,
     data.external.fetchStackHostnames
   ]
 }
@@ -47,7 +46,6 @@ resource "linode_domain_record" "replicas" {
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
-    null_resource.applyStackManifest,
     data.external.fetchStackHostnames
   ]
 }
