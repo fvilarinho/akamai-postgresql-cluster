@@ -41,7 +41,9 @@ function checkDependencies() {
 
 # Applies the stack namespaces replacing the placeholders with the correspondent environment variable value.
 function applyStackNamespaces() {
-  $KUBECTL_CMD create namespace "$NAMESPACE" -o yaml --dry-run=client | $KUBECTL_CMD apply -f -
+  $KUBECTL_CMD create namespace "$NAMESPACE" \
+               -o yaml \
+               --dry-run=client | $KUBECTL_CMD apply -f -
 }
 
 # Applies the stack manifest replacing the placeholders with the correspondent environment variable value.
