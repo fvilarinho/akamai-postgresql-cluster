@@ -1,7 +1,8 @@
 variable "settings" {
   default = {
     general = {
-      domain = "<your-domain>"
+      domain              = "<your-domain>"
+      credentialsFilename = "<your-credentials-filename>"
     }
 
     cluster = {
