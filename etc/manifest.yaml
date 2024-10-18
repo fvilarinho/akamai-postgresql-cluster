@@ -4,7 +4,11 @@ metadata:
   namespace: ${NAMESPACE}
   name: ${LABEL}
 spec:
+  imageName: ghcr.io/cloudnative-pg/postgresql:${VERSION}
+  imagePullPolicy: always
   instances: ${NODES_COUNT}
+  monitoring:
+    enablePodMonitor: true
   storage:
     size: ${STORAGE_DATA_SIZE}Gi
 ---

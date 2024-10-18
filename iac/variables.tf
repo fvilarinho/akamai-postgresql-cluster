@@ -9,6 +9,7 @@ variable "settings" {
     cluster = {
       namespace = "akamai-postgresql"
       label     = "postgresql"
+      version   = 17.0
       tags      = [ "database" ]
 
       nodes = {
@@ -18,7 +19,7 @@ variable "settings" {
       }
 
       storage = {
-        dataSize = 10
+        size = 10
       }
 
       allowedIps = {

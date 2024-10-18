@@ -26,14 +26,20 @@ function checkDependencies() {
     exit 1
   fi
 
+  if [ -z "$VERSION" ]; then
+    echo "The cluster version is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
+
   if [ -z "$NODES_COUNT" ]; then
     echo "The nodes count is not defined! Please define it first to continue!"
 
     exit 1
   fi
 
-  if [ -z "$STORAGE_DATA_SIZE" ]; then
-    echo "The nodes storages data size is not defined! Please define it first to continue!"
+  if [ -z "$STORAGE_SIZE" ]; then
+    echo "The storage size is not defined! Please define it first to continue!"
 
     exit 1
   fi
@@ -54,8 +60,9 @@ function applyStackManifest() {
 
   sed -i -e 's|${NAMESPACE}|'"$NAMESPACE"'|g' "$manifestFilename".tmp
   sed -i -e 's|${LABEL}|'"$LABEL"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${VERSION}|'"$VERSION"'|g' "$manifestFilename".tmp
   sed -i -e 's|${NODES_COUNT}|'"$NODES_COUNT"'|g' "$manifestFilename".tmp
-  sed -i -e 's|${STORAGE_DATA_SIZE}|'"$STORAGE_DATA_SIZE"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${STORAGE_SIZE}|'"$STORAGE_SIZE"'|g' "$manifestFilename".tmp
 
   $KUBECTL_CMD apply -f "$manifestFilename".tmp
 

@@ -29,8 +29,9 @@ resource "null_resource" "applyStackManifest" {
       MANIFEST_FILENAME = local.stackManifestFilename
       NAMESPACE         = var.settings.cluster.namespace
       LABEL             = var.settings.cluster.label
+      VERSION           = var.settings.cluster.version
       NODES_COUNT       = var.settings.cluster.nodes.count
-      STORAGE_DATA_SIZE = var.settings.cluster.storage.dataSize
+      STORAGE_SIZE      = var.settings.cluster.storage.size
     }
 
     quiet   = true
