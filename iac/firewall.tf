@@ -33,7 +33,7 @@ resource "linode_firewall" "default" {
     action   = "ACCEPT"
     label    = "allowed-ips"
     protocol = "TCP"
-    ports    = "80,443"
+    ports    = "5432"
     ipv4     = concat(var.settings.cluster.allowedIps.ipv4, [ "${jsondecode(data.http.myIp.response_body).ip}/32" ])
     ipv6     = var.settings.cluster.allowedIps.ipv6
   }
