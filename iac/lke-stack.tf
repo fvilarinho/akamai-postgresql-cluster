@@ -7,11 +7,6 @@ locals {
 
 # Applies the stack operator.
 resource "null_resource" "applyStackOperator" {
-  # Executes only when a change happened.
-  triggers = {
-    always_run = filemd5(local.applyStackOperatorScriptFilename)
-  }
-
   provisioner "local-exec" {
     # Required variables.
     environment = {
@@ -27,11 +22,6 @@ resource "null_resource" "applyStackOperator" {
 
 # Applies the stack manifest.
 resource "null_resource" "applyStackManifest" {
-  # Executes only when a change happened.
-  triggers = {
-    always_run = "${filemd5(local.applyStackManifestScriptFilename)}|${filemd5(local.stackManifestFilename)}"
-  }
-
   provisioner "local-exec" {
     # Required variables.
     environment = {

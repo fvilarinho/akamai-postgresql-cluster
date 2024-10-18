@@ -1,6 +1,7 @@
 variable "settings" {
   default = {
     general = {
+      email               = "<your-email>"
       domain              = "<your-domain>"
       credentialsFilename = "<your-credentials-filename>"
     }
