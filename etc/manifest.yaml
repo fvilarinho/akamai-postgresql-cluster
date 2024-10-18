@@ -1,0 +1,35 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  namespace: ${NAMESPACE}
+  name: ${LABEL}
+spec:
+  instances: ${NODES_COUNT}
+  storage:
+    size: ${STORAGE_DATA_SIZE}Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ${NAMESPACE}
+  name: ${LABEL}-ingress-primary
+spec:
+  type: LoadBalancer
+  selector:
+    role: primary
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ${NAMESPACE}
+  name: ${LABEL}-ingress-replicas
+spec:
+  type: LoadBalancer
+  selector:
+    role: replica
+  ports:
+    - port: 5432
+      targetPort: 5432

@@ -1,0 +1,5 @@
+/.idea/
+/iac/terraform.tfvars
+/etc/.kubeconfig
+/iac/.terraform*
+
