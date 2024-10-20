@@ -1,39 +1,71 @@
-apiVersion: postgresql.cnpg.io/v1
-kind: Cluster
+apiVersion: v1
+type: kubernetes.io/basic-auth
+
 metadata:
   namespace: ${NAMESPACE}
-  name: ${LABEL}
+  name: ${IDENTIFIER}-secret
+
+kind: Secret
+data:
+  username: ${DATABASE_USER}
+  password: ${DATABASE_PASSWORD}
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+
+metadata:
+  namespace: ${NAMESPACE}
+  name: ${IDENTIFIER}
+
 spec:
-  imageName: ghcr.io/cloudnative-pg/postgresql:${VERSION}
+  imageName: ghcr.io/cloudnative-pg/postgresql:${DATABASE_VERSION}
   imagePullPolicy: Always
+
   instances: ${NODES_COUNT}
-  monitoring:
-    enablePodMonitor: true
+
+  bootstrap:
+    initdb:
+      database: ${DATABASE_NAME}
+      owner: ${DATABASE_OWNER}
+      secret:
+        name: ${IDENTIFIER}-secret
+
   storage:
     size: ${STORAGE_SIZE}Gi
+
+  monitoring:
+    enablePodMonitor: true
 ---
 apiVersion: v1
 kind: Service
+
 metadata:
   namespace: ${NAMESPACE}
-  name: ${LABEL}-ingress-primary
+  name: ${IDENTIFIER}-ingress-primary
+
 spec:
   type: LoadBalancer
+
   selector:
     role: primary
+
   ports:
     - port: 5432
       targetPort: 5432
 ---
 apiVersion: v1
 kind: Service
+
 metadata:
   namespace: ${NAMESPACE}
-  name: ${LABEL}-ingress-replicas
+  name: ${IDENTIFIER}-ingress-replicas
+
 spec:
   type: LoadBalancer
+
   selector:
     role: replica
+
   ports:
     - port: 5432
       targetPort: 5432

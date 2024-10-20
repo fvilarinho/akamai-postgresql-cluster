@@ -18,10 +18,10 @@ function checkDependencies() {
     exit 1
   fi
 
-  export LABEL="$3"
+  export IDENTIFIER="$3"
 
-  if [ -z "$LABEL" ]; then
-    echo "The cluster label is not defined! Please define it first to continue!"
+  if [ -z "$IDENTIFIER" ]; then
+    echo "The cluster identifier is not defined! Please define it first to continue!"
 
     exit 1
   fi
@@ -36,12 +36,12 @@ function fetchStackHostnames() {
 
   # Waits until LKE cluster load balancer is ready.
   while true; do
-    PRIMARY_HOSTNAME=$($KUBECTL_CMD get service "$LABEL"-ingress-primary \
+    PRIMARY_HOSTNAME=$($KUBECTL_CMD get service "$IDENTIFIER"-ingress-primary \
                                     -n "$NAMESPACE" \
                                     -o json | $JQ_CMD -r '.status.loadBalancer.ingress[].hostname')
 
     if [ -n "$PRIMARY_HOSTNAME" ]; then
-      REPLICAS_HOSTNAME=$($KUBECTL_CMD get service "$LABEL"-ingress-replicas \
+      REPLICAS_HOSTNAME=$($KUBECTL_CMD get service "$IDENTIFIER"-ingress-replicas \
                                        -n "$NAMESPACE" \
                                        -o json | $JQ_CMD -r '.status.loadBalancer.ingress[].hostname')
 

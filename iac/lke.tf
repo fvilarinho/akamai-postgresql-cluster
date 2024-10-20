@@ -6,7 +6,7 @@ locals {
 # Definition of the K8S cluster to deploy the stack.
 resource "linode_lke_cluster" "default" {
   k8s_version = "1.31"
-  label       = var.settings.cluster.namespace
+  label       = var.settings.cluster.identifier
   tags        = var.settings.cluster.tags
   region      = var.settings.cluster.nodes.region
 

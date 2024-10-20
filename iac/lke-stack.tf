@@ -28,8 +28,12 @@ resource "null_resource" "applyStackManifest" {
       KUBECONFIG        = local.kubeconfigFilename
       MANIFEST_FILENAME = local.stackManifestFilename
       NAMESPACE         = var.settings.cluster.namespace
-      LABEL             = var.settings.cluster.label
-      VERSION           = var.settings.cluster.version
+      IDENTIFIER        = var.settings.cluster.identifier
+      DATABASE_VERSION  = var.settings.cluster.database.version
+      DATABASE_NAME     = var.settings.cluster.database.name
+      DATABASE_OWNER    = var.settings.cluster.database.user
+      DATABASE_USER     = base64encode(var.settings.cluster.database.user)
+      DATABASE_PASSWORD = base64encode(var.settings.cluster.database.password)
       NODES_COUNT       = var.settings.cluster.nodes.count
       STORAGE_SIZE      = var.settings.cluster.storage.size
     }

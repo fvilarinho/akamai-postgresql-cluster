@@ -29,5 +29,5 @@ terraform {
 
 # Akamai Cloud Computing provider definition.
 provider "linode" {
-  config_path = abspath(pathexpand(var.settings.general.credentialsFilename))
+  config_path = abspath(pathexpand("~/.aws/credentials"))
 }

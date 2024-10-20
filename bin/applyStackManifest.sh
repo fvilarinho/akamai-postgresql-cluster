@@ -20,14 +20,32 @@ function checkDependencies() {
     exit 1
   fi
 
-  if [ -z "$LABEL" ]; then
-    echo "The cluster label is not defined! Please define it first to continue!"
+  if [ -z "$IDENTIFIER" ]; then
+    echo "The cluster identifier is not defined! Please define it first to continue!"
 
     exit 1
   fi
 
-  if [ -z "$VERSION" ]; then
-    echo "The cluster version is not defined! Please define it first to continue!"
+  if [ -z "$DATABASE_VERSION" ]; then
+    echo "The database version is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
+
+  if [ -z "$DATABASE_NAME" ]; then
+    echo "The database name is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
+
+  if [ -z "$DATABASE_USER" ]; then
+    echo "The database user is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
+
+  if [ -z "$DATABASE_PASSWORD" ]; then
+    echo "The database password is not defined! Please define it first to continue!"
 
     exit 1
   fi
@@ -59,8 +77,12 @@ function applyStackManifest() {
   cp -f "$manifestFilename" "$manifestFilename".tmp
 
   sed -i -e 's|${NAMESPACE}|'"$NAMESPACE"'|g' "$manifestFilename".tmp
-  sed -i -e 's|${LABEL}|'"$LABEL"'|g' "$manifestFilename".tmp
-  sed -i -e 's|${VERSION}|'"$VERSION"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${IDENTIFIER}|'"$IDENTIFIER"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${DATABASE_VERSION}|'"$DATABASE_VERSION"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${DATABASE_NAME}|'"$DATABASE_NAME"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${DATABASE_OWNER}|'"$DATABASE_OWNER"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${DATABASE_USER}|'"$DATABASE_USER"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${DATABASE_PASSWORD}|'"$DATABASE_PASSWORD"'|g' "$manifestFilename".tmp
   sed -i -e 's|${NODES_COUNT}|'"$NODES_COUNT"'|g' "$manifestFilename".tmp
   sed -i -e 's|${STORAGE_SIZE}|'"$STORAGE_SIZE"'|g' "$manifestFilename".tmp
 

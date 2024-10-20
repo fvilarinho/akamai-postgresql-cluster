@@ -1,20 +1,25 @@
 variable "settings" {
   default = {
     general = {
-      email               = "<your-email>"
-      domain              = "<your-domain>"
-      credentialsFilename = "<your-credentials-filename>"
+      email  = "<your-email>"
+      domain = "<your-domain>"
     }
 
     cluster = {
-      namespace = "akamai-postgresql"
-      label     = "postgresql"
-      version   = 17.0
-      tags      = [ "database" ]
+      namespace  = "akamai-postgresql"
+      identifier = "postgresql"
+      tags       = [ "database" ]
+
+      database = {
+        version  = 17.0
+        name     = "defaultdb"
+        user     = "<user>"
+        password = "<password>"
+      }
 
       nodes = {
         type   = "g6-standard-4"
-        region = "br-gru"
+        region = "<region>"
         count  = 3
       }
 

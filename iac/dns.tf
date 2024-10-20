@@ -1,7 +1,7 @@
 # Required variables.
 locals {
-  stackPrimaryHostname              = "${var.settings.cluster.label}-primary.${var.settings.general.domain}"
-  stackReplicasHostname             = "${var.settings.cluster.label}-replicas.${var.settings.general.domain}"
+  stackPrimaryHostname              = "${var.settings.cluster.identifier}-primary.${var.settings.general.domain}"
+  stackReplicasHostname             = "${var.settings.cluster.identifier}-replicas.${var.settings.general.domain}"
   fetchStackHostnamesScriptFilename = abspath(pathexpand("../bin/fetchStackHostnames.sh"))
 }
 
@@ -10,7 +10,7 @@ data "external" "fetchStackHostnames" {
     local.fetchStackHostnamesScriptFilename,
     local.kubeconfigFilename,
     var.settings.cluster.namespace,
-    var.settings.cluster.label
+    var.settings.cluster.identifier
   ]
 
   depends_on = [ null_resource.applyStackManifest ]
