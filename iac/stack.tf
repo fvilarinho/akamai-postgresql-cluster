@@ -5,7 +5,7 @@ locals {
   stackManifestFilename            = abspath(pathexpand("../etc/manifest.yaml"))
 }
 
-# Applies the stack operator.
+# Applies the stack operator responsible for the stack manifest provisioning.
 resource "null_resource" "applyStackOperator" {
   provisioner "local-exec" {
     # Required variables.
@@ -34,9 +34,9 @@ resource "null_resource" "applyStackManifest" {
       DATABASE_OWNER             = var.settings.cluster.database.user
       DATABASE_USER              = base64encode(var.settings.cluster.database.user)
       DATABASE_PASSWORD          = base64encode(var.settings.cluster.database.password)
-      DATABASE_BACKUP_URL        = var.settings.cluster.database.backup.url
-      DATABASE_BACKUP_ACCESS_KEY = base64encode(var.settings.cluster.database.backup.accessKey)
-      DATABASE_BACKUP_SECRET_KEY = base64encode(var.settings.cluster.database.backup.secretKey)
+      DATABASE_BACKUP_URL        = "https://${linode_object_storage_bucket.backup.hostname}"
+      DATABASE_BACKUP_ACCESS_KEY = base64encode(linode_object_storage_key.backup.access_key)
+      DATABASE_BACKUP_SECRET_KEY = base64encode(linode_object_storage_key.backup.secret_key)
       DATABASE_BACKUP_SCHEDULE   = var.settings.cluster.database.backup.schedule
       NODES_COUNT                = var.settings.cluster.nodes.count
       STORAGE_SIZE               = var.settings.cluster.storage.size
@@ -46,5 +46,9 @@ resource "null_resource" "applyStackManifest" {
     command = local.applyStackManifestScriptFilename
   }
 
-  depends_on = [ null_resource.applyStackOperator ]
+  depends_on = [
+    null_resource.applyStackOperator,
+    linode_object_storage_bucket.backup,
+    linode_object_storage_key.backup
+  ]
 }

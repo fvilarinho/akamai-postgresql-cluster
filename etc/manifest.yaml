@@ -51,7 +51,7 @@ spec:
 
   backup:
     barmanObjectStore:
-      destinationPath: s3://${DATABASE_NAME}
+      destinationPath: s3://${IDENTIFIER}-${DATABASE_NAME}
       endpointURL: ${DATABASE_BACKUP_URL}
       s3Credentials:
         accessKeyId:

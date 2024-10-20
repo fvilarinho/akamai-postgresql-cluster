@@ -17,10 +17,8 @@ variable "settings" {
         password = "<password>"
 
         backup = {
-          url       = "<s3-compatible-url>"
-          accessKey = "<access-key>"
-          secretKey = "<secret-key>"
-          schedule  = "0 0 0 * * *"
+          region   = "<region>"
+          schedule = "0 0 0 * * *"
         }
       }
 
