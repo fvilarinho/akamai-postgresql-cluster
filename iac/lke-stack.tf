@@ -25,17 +25,21 @@ resource "null_resource" "applyStackManifest" {
   provisioner "local-exec" {
     # Required variables.
     environment = {
-      KUBECONFIG        = local.kubeconfigFilename
-      MANIFEST_FILENAME = local.stackManifestFilename
-      NAMESPACE         = var.settings.cluster.namespace
-      IDENTIFIER        = var.settings.cluster.identifier
-      DATABASE_VERSION  = var.settings.cluster.database.version
-      DATABASE_NAME     = var.settings.cluster.database.name
-      DATABASE_OWNER    = var.settings.cluster.database.user
-      DATABASE_USER     = base64encode(var.settings.cluster.database.user)
-      DATABASE_PASSWORD = base64encode(var.settings.cluster.database.password)
-      NODES_COUNT       = var.settings.cluster.nodes.count
-      STORAGE_SIZE      = var.settings.cluster.storage.size
+      KUBECONFIG                 = local.kubeconfigFilename
+      MANIFEST_FILENAME          = local.stackManifestFilename
+      NAMESPACE                  = var.settings.cluster.namespace
+      IDENTIFIER                 = var.settings.cluster.identifier
+      DATABASE_VERSION           = var.settings.cluster.database.version
+      DATABASE_NAME              = var.settings.cluster.database.name
+      DATABASE_OWNER             = var.settings.cluster.database.user
+      DATABASE_USER              = base64encode(var.settings.cluster.database.user)
+      DATABASE_PASSWORD          = base64encode(var.settings.cluster.database.password)
+      DATABASE_BACKUP_URL        = var.settings.cluster.database.backup.url
+      DATABASE_BACKUP_ACCESS_KEY = base64encode(var.settings.cluster.database.backup.accessKey)
+      DATABASE_BACKUP_SECRET_KEY = base64encode(var.settings.cluster.database.backup.secretKey)
+      DATABASE_BACKUP_SCHEDULE   = var.settings.cluster.database.backup.schedule
+      NODES_COUNT                = var.settings.cluster.nodes.count
+      STORAGE_SIZE               = var.settings.cluster.storage.size
     }
 
     quiet   = true

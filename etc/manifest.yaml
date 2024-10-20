@@ -1,15 +1,28 @@
+# Definition of the cluster credentials for authentication and backups.
 apiVersion: v1
 type: kubernetes.io/basic-auth
 
 metadata:
   namespace: ${NAMESPACE}
-  name: ${IDENTIFIER}-secret
+  name: ${IDENTIFIER}-auth-secret
 
 kind: Secret
 data:
   username: ${DATABASE_USER}
   password: ${DATABASE_PASSWORD}
 ---
+apiVersion: v1
+kind: Secret
+
+metadata:
+  namespace: ${NAMESPACE}
+  name: ${IDENTIFIER}-backup-secret
+
+data:
+  ACCESS_KEY_ID: ${DATABASE_BACKUP_ACCESS_KEY}
+  ACCESS_SECRET_KEY: ${DATABASE_BACKUP_SECRET_KEY}
+---
+# Definition of the cluster with customizations (initialization, replicas, backups, monitoring and storage).
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 
@@ -28,14 +41,44 @@ spec:
       database: ${DATABASE_NAME}
       owner: ${DATABASE_OWNER}
       secret:
-        name: ${IDENTIFIER}-secret
+        name: ${IDENTIFIER}-auth-secret
 
   storage:
     size: ${STORAGE_SIZE}Gi
 
   monitoring:
     enablePodMonitor: true
+
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://${DATABASE_NAME}
+      endpointURL: ${DATABASE_BACKUP_URL}
+      s3Credentials:
+        accessKeyId:
+          name: ${IDENTIFIER}-backup-secret
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: ${IDENTIFIER}-backup-secret
+          key: ACCESS_SECRET_KEY
+    retentionPolicy: "30d"
 ---
+# Definition of the backup schedule.
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+
+metadata:
+  namespace: ${NAMESPACE}
+  name: ${IDENTIFIER}-backup
+
+spec:
+  schedule: "${DATABASE_BACKUP_SCHEDULE}"
+  suspend: false
+  immediate: true
+  backupOwnerReference: self
+  cluster:
+    name: ${IDENTIFIER}
+---
+# Definition of the cluster load balancers (primary and replicas).
 apiVersion: v1
 kind: Service
 

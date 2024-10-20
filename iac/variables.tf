@@ -15,6 +15,13 @@ variable "settings" {
         name     = "defaultdb"
         user     = "<user>"
         password = "<password>"
+
+        backup = {
+          url       = "<s3-compatible-url>"
+          accessKey = "<access-key>"
+          secretKey = "<secret-key>"
+          schedule  = "0 0 0 * * *"
+        }
       }
 
       nodes = {
@@ -25,11 +32,6 @@ variable "settings" {
 
       storage = {
         size = 10
-      }
-
-      allowedIps = {
-        ipv4 = [ "0.0.0.0/0" ]
-        ipv6 = []
       }
     }
   }

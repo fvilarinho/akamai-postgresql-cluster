@@ -17,7 +17,7 @@ function applyStackOperator() {
   NAMESPACE=cnpg-system
 
   while true; do
-    sleep 5
+    sleep 10
 
     OPERATOR_IS_RUNNING=$($KUBECTL_CMD get pods -n "$NAMESPACE" | grep Running)
 
@@ -27,6 +27,8 @@ function applyStackOperator() {
       break
     fi
   done
+
+  sleep 10
 }
 
 # Main function.

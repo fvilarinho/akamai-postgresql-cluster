@@ -50,6 +50,30 @@ function checkDependencies() {
     exit 1
   fi
 
+  if [ -z "$DATABASE_BACKUP_URL" ]; then
+    echo "The database backup url is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
+
+  if [ -z "$DATABASE_BACKUP_ACCESS_KEY" ]; then
+    echo "The database backup access key is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
+
+  if [ -z "$DATABASE_BACKUP_SECRET_KEY" ]; then
+    echo "The database backup secret key is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
+
+  if [ -z "$DATABASE_BACKUP_SCHEDULE" ]; then
+    echo "The database backup schedule is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
+
   if [ -z "$NODES_COUNT" ]; then
     echo "The nodes count is not defined! Please define it first to continue!"
 
@@ -83,6 +107,10 @@ function applyStackManifest() {
   sed -i -e 's|${DATABASE_OWNER}|'"$DATABASE_OWNER"'|g' "$manifestFilename".tmp
   sed -i -e 's|${DATABASE_USER}|'"$DATABASE_USER"'|g' "$manifestFilename".tmp
   sed -i -e 's|${DATABASE_PASSWORD}|'"$DATABASE_PASSWORD"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${DATABASE_BACKUP_URL}|'"$DATABASE_BACKUP_URL"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${DATABASE_BACKUP_ACCESS_KEY}|'"$DATABASE_BACKUP_ACCESS_KEY"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${DATABASE_BACKUP_SECRET_KEY}|'"$DATABASE_BACKUP_SECRET_KEY"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${DATABASE_BACKUP_SCHEDULE}|'"$DATABASE_BACKUP_SCHEDULE"'|g' "$manifestFilename".tmp
   sed -i -e 's|${NODES_COUNT}|'"$NODES_COUNT"'|g' "$manifestFilename".tmp
   sed -i -e 's|${STORAGE_SIZE}|'"$STORAGE_SIZE"'|g' "$manifestFilename".tmp
 
@@ -94,6 +122,9 @@ function applyStackManifest() {
 # Main function.
 function main() {
   checkDependencies
+
+  sleep 10
+
   applyStackNamespaces
   applyStackManifest
 }
