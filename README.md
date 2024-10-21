@@ -4,10 +4,11 @@
 This project has the intention to demonstrate the how to deploy a PostgreSQL cluster in Akamai Cloud Computing.
 
 ### Requirements
-- [`terraform 1.5.x`](https://terraform.io)
-- [`kubectl 1.31.x`](https://kubernetes.io/docs/reference/kubectl/kubectl)
-- [`linode-cli 5.52.x`](https://www.linode.com/products/cli)
-- [`jq 1.7.x`](https://jqlang.github.io/jq)
+- [terraform 1.5.x](https://terraform.io)
+- [kubectl 1.31.x](https://kubernetes.io/docs/reference/kubectl/kubectl)
+- [linode-cli 5.52.x](https://www.linode.com/products/cli)
+- [jq 1.7.x](https://jqlang.github.io/jq)
+- [Akamai Cloud Computing account](https://cloud.linode.com)
 - `Any Linux Distribution` or
 - `Windows 10 or later` or
 - `MacOS Catalina or later`
@@ -34,7 +35,7 @@ your project directory.
 ### Documentation
 
 Follow the documentation below to know more about Akamai:
-- [**Akamai Techdocs**](https://techdocs.akamai.com)
+- [Akamai Techdocs](https://techdocs.akamai.com)
 
 ### Important notes
 - **DON'T EXPOSE OR COMMIT ANY SENSITIVE DATA, SUCH AS CREDENTIALS, IN THE PROJECT.**
