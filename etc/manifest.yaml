@@ -33,6 +33,7 @@ metadata:
 spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:${DATABASE_VERSION}
   imagePullPolicy: Always
+  primaryUpdateStrategy: unsupervised
 
   instances: ${NODES_COUNT}
 
