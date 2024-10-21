@@ -12,13 +12,15 @@ variable "settings" {
 
       database = {
         version  = 17.0
+        port     = 5432
         name     = "defaultdb"
         user     = "<user>"
         password = "<password>"
 
         backup = {
-          region   = "<region>"
-          schedule = "0 0 0 * * *"
+          region    = "<region>"
+          schedule  = "0 0 0 * * *"
+          retention = 30
         }
       }
 

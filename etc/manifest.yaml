@@ -36,6 +36,10 @@ spec:
 
   instances: ${NODES_COUNT}
 
+  postgresql:
+    parameters:
+      port: ${DATABASE_PORT}
+
   bootstrap:
     initdb:
       database: ${DATABASE_NAME}
@@ -60,7 +64,7 @@ spec:
         secretAccessKey:
           name: ${IDENTIFIER}-backup-secret
           key: ACCESS_SECRET_KEY
-    retentionPolicy: "30d"
+    retentionPolicy: "${DATABASE_BACKUP_RETENTION}d"
 ---
 # Definition of the backup schedule.
 apiVersion: postgresql.cnpg.io/v1
@@ -93,8 +97,8 @@ spec:
     role: primary
 
   ports:
-    - port: 5432
-      targetPort: 5432
+    - port: ${DATABASE_PORT}
+      targetPort: ${DATABASE_PORT}
 ---
 apiVersion: v1
 kind: Service
@@ -110,5 +114,5 @@ spec:
     role: replica
 
   ports:
-    - port: 5432
-      targetPort: 5432
+    - port: ${DATABASE_PORT}
+      targetPort: ${DATABASE_PORT}

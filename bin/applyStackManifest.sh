@@ -119,21 +119,21 @@ function applyStackManifest() {
   rm -f "$manifestFilename".tmp*
 }
 
-# Waits until the stack is ready with all resources provisioned.
+# Waits until stack is ready and all resources provisioned.
 function waitUntilStackIsReady() {
-  while true; dp
+  while true; do
     sleep 10
 
-    IS_READY=$($KUBECTL get cluster -n "$NAMESPACE" | grep "Cluster in healthy state")
+    IS_READY=$($KUBECTL_CMD get cluster -n "$NAMESPACE" | grep "Cluster in healthy state")
 
     if [ -n "$IS_READY" ]; then
       break
     fi
 
     echo "Waiting until the stack gets ready..."
-  dpne
+  done
 
-  echo "The stack is now ready!"
+  echo "Stack is not ready!"
 }
 
 # Main function.

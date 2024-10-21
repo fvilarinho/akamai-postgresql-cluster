@@ -31,6 +31,7 @@ resource "null_resource" "applyStackManifest" {
       NAMESPACE                  = var.settings.cluster.namespace
       IDENTIFIER                 = var.settings.cluster.identifier
       DATABASE_VERSION           = var.settings.cluster.database.version
+      DATABASE_PORT              = var.settings.cluster.database.port
       DATABASE_NAME              = var.settings.cluster.database.name
       DATABASE_OWNER             = var.settings.cluster.database.user
       DATABASE_USER              = base64encode(var.settings.cluster.database.user)
@@ -39,6 +40,7 @@ resource "null_resource" "applyStackManifest" {
       DATABASE_BACKUP_ACCESS_KEY = base64encode(linode_object_storage_key.backup.access_key)
       DATABASE_BACKUP_SECRET_KEY = base64encode(linode_object_storage_key.backup.secret_key)
       DATABASE_BACKUP_SCHEDULE   = var.settings.cluster.database.backup.schedule
+      DATABASE_BACKUP_RETENTION  = var.settings.cluster.database.backup.retention
       NODES_COUNT                = var.settings.cluster.nodes.count
       STORAGE_SIZE               = var.settings.cluster.storage.size
     }
