@@ -6,7 +6,7 @@ locals {
   stackManifestFilename                 = abspath(pathexpand("../etc/manifest.yaml"))
 }
 
-# Applies the stack operator responsible for the stack manifest provisioning.
+# Applies the stack operator responsible for the stack provisioning.
 resource "null_resource" "applyStackOperator" {
   provisioner "local-exec" {
     # Required variables.
@@ -21,7 +21,7 @@ resource "null_resource" "applyStackOperator" {
   depends_on = [ local_sensitive_file.kubeconfig ]
 }
 
-# Applies the stack manifest.
+# Applies the stack manifest and waits until it is ready.
 resource "null_resource" "applyStackManifest" {
   provisioner "local-exec" {
     # Required variables.
@@ -54,6 +54,7 @@ resource "null_resource" "applyStackManifest" {
   ]
 }
 
+# Applies the stack labels and tags.
 resource "null_resource" "applyStackLabelsAndTags" {
   provisioner "local-exec" {
     environment = {

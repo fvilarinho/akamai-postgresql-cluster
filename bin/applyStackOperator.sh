@@ -22,13 +22,15 @@ function applyStackOperator() {
     OPERATOR_IS_RUNNING=$($KUBECTL_CMD get pods -n "$NAMESPACE" | grep Running)
 
     if [ -n "$OPERATOR_IS_RUNNING" ]; then
-      echo "The cluster operator is now running!"
-
       break
     fi
+
+    echo "Waiting until the stack operator gets ready..."
   done
 
   sleep 10
+
+  echo "The stack operator is now ready!"
 }
 
 # Main function.

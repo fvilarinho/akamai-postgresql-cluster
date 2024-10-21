@@ -22,7 +22,7 @@ resource "linode_domain" "default" {
   type      = "master"
   soa_email = var.settings.general.email
   ttl_sec   = 30
-  tags      = var.settings.cluster.tags
+  tags      = concat(var.settings.cluster.tags, [ var.settings.cluster.namespace ])
 }
 
 # Definition of the default DNS entry for the primary instance.

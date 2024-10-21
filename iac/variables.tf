@@ -6,9 +6,9 @@ variable "settings" {
     }
 
     cluster = {
-      namespace  = "akamai-postgresql"
+      namespace  = "akamai-dbaas"
       identifier = "postgresql"
-      tags       = [ "database" ]
+      tags       = [ "demo" ]
 
       database = {
         version  = 17.0

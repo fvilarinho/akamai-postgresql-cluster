@@ -8,12 +8,6 @@ function checkDependencies() {
     exit 1
   fi
 
-  if [ -z "$MANIFEST_FILENAME" ]; then
-    echo "The cluster manifest file is not defined! Please define it first to continue!"
-
-    exit 1
-  fi
-
   if [ -z "$NAMESPACE" ]; then
     echo "The cluster namespace is not defined! Please define it first to continue!"
 
@@ -22,6 +16,12 @@ function checkDependencies() {
 
   if [ -z "$IDENTIFIER" ]; then
     echo "The cluster identifier is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
+
+  if [ -z "$MANIFEST_FILENAME" ]; then
+    echo "The stack manifest file is not defined! Please define it first to continue!"
 
     exit 1
   fi
@@ -119,14 +119,29 @@ function applyStackManifest() {
   rm -f "$manifestFilename".tmp*
 }
 
+# Waits until the stack is ready with all resources provisioned.
+function waitUntilStackIsReady() {
+  while true; dp
+    sleep 10
+
+    IS_READY=$($KUBECTL get cluster -n "$NAMESPACE" | grep "Cluster in healthy state")
+
+    if [ -n "$IS_READY" ]; then
+      break
+    fi
+
+    echo "Waiting until the stack gets ready..."
+  dpne
+
+  echo "The stack is now ready!"
+}
+
 # Main function.
 function main() {
   checkDependencies
-
-  sleep 10
-
   applyStackNamespaces
   applyStackManifest
+  waitUntilStackIsReady
 }
 
 main
