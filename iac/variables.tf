@@ -31,6 +31,11 @@ variable "settings" {
       storage = {
         size = 10
       }
+
+      allowedIps = {
+        ipv4 = [ "0.0.0.0/0" ]
+        ipv6 = []
+      }
     }
   }
 }
