@@ -23,6 +23,7 @@ data:
   ACCESS_SECRET_KEY: ${DATABASE_BACKUP_SECRET_KEY}
 ---
 # Definition of the cluster with customizations (initialization, replicas, backups, monitoring and storage).
+# Powered by Cloud Native PG (https://cloudnative-pg.io).
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 
@@ -31,12 +32,15 @@ metadata:
   name: ${IDENTIFIER}
 
 spec:
+  # PostgreSQL version.
   imageName: ghcr.io/cloudnative-pg/postgresql:${DATABASE_VERSION}
   imagePullPolicy: Always
   primaryUpdateStrategy: unsupervised
 
+  # Number of nodes in the cluster.
   instances: ${NODES_COUNT}
 
+  # Custom parameters.
   postgresql:
     parameters:
       "pgaudit.log": "all, -misc"
@@ -45,6 +49,7 @@ spec:
       "pgaudit.log_relation": "on"
       port: ${DATABASE_PORT}
 
+  # Initialization.
   bootstrap:
     initdb:
       database: ${DATABASE_NAME}
@@ -52,12 +57,15 @@ spec:
       secret:
         name: ${IDENTIFIER}-auth-secret
 
+  # Storage definition.
   storage:
     size: ${STORAGE_SIZE}Gi
 
+  # Monitoring definition.
   monitoring:
     enablePodMonitor: true
 
+  # Backup definition.
   backup:
     barmanObjectStore:
       destinationPath: s3://${IDENTIFIER}-${DATABASE_NAME}
@@ -80,6 +88,7 @@ metadata:
   name: ${IDENTIFIER}-backup
 
 spec:
+  # Cron based format.
   schedule: "${DATABASE_BACKUP_SCHEDULE}"
   suspend: false
   immediate: true
