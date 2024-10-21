@@ -1,8 +1,9 @@
 # Required variables.
 locals {
-  applyStackOperatorScriptFilename = abspath(pathexpand("../bin/applyStackOperator.sh"))
-  applyStackManifestScriptFilename = abspath(pathexpand("../bin/applyStackManifest.sh"))
-  stackManifestFilename            = abspath(pathexpand("../etc/manifest.yaml"))
+  applyStackOperatorScriptFilename      = abspath(pathexpand("../bin/applyStackOperator.sh"))
+  applyStackManifestScriptFilename      = abspath(pathexpand("../bin/applyStackManifest.sh"))
+  applyStackLabelsAndTagsScriptFilename = abspath(pathexpand("../bin/applyStackLabelsAndTags.sh"))
+  stackManifestFilename                 = abspath(pathexpand("../etc/manifest.yaml"))
 }
 
 # Applies the stack operator responsible for the stack manifest provisioning.
@@ -51,4 +52,19 @@ resource "null_resource" "applyStackManifest" {
     linode_object_storage_bucket.backup,
     linode_object_storage_key.backup
   ]
+}
+
+resource "null_resource" "applyStackLabelsAndTags" {
+  provisioner "local-exec" {
+    environment = {
+      KUBECONFIG = local.kubeconfigFilename
+      NAMESPACE  = var.settings.cluster.namespace
+      TAGS       = join(" ", var.settings.cluster.tags)
+    }
+
+    quiet   = true
+    command = local.applyStackLabelsAndTagsScriptFilename
+  }
+
+  depends_on = [ null_resource.applyStackManifest ]
 }

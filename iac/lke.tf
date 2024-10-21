@@ -7,10 +7,11 @@ locals {
 resource "linode_lke_cluster" "default" {
   k8s_version = "1.31"
   label       = var.settings.cluster.identifier
-  tags        = var.settings.cluster.tags
+  tags        = concat(var.settings.cluster.tags, [ var.settings.cluster.namespace ])
   region      = var.settings.cluster.nodes.region
 
   pool {
+    tags  = var.settings.cluster.tags
     type  = var.settings.cluster.nodes.type
     count = var.settings.cluster.nodes.count
   }
