@@ -1,5 +1,5 @@
 /.idea/
-/iac/terraform.tfvars
+/etc/.backupCredentials
 /etc/.kubeconfig
 /iac/.terraform*
-
+/iac/terraform.tfvars
