@@ -38,6 +38,10 @@ spec:
 
   postgresql:
     parameters:
+      "pgaudit.log": "all, -misc"
+      "pgaudit.log_catalog": "off"
+      "pgaudit.log_parameter": "on"
+      "pgaudit.log_relation": "on"
       port: ${DATABASE_PORT}
 
   bootstrap:
