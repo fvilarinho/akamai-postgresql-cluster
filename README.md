@@ -21,7 +21,7 @@ environment:
 - **LKE (Linode Kubernetes Engine)**: Please check the file `iac/lke.tf` for more details. 
 - **Object Storage**: Please check the file `iac/object-storage.tf` for more details.
 - **Block Storage**: Please check the file `etc/manifest.yaml` for more details.
-- **PostgreSQL**: Please check the file `etc/manifest.yaml` for more details.
+- **[PostgreSQL](https://cloudnative-pg.io)**: Please check the file `etc/manifest.yaml` for more details.
 
 All Terraform files use `variables` that are stored in the `iac/variables.tf`.
 
