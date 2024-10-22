@@ -36,6 +36,8 @@ resource "null_resource" "consoleSetup" {
       "apt -y install python3 python3-pip",
       "pip3 install linode-cli --upgrade",
       "pip3 install boto3",
+      "mkdir -p /root/.aws",
+      "apt -y install awscli"
     ]
   }
 
@@ -92,6 +94,16 @@ resource "null_resource" "consoleFiles" {
 
     source      = local.certificateKeyFilename
     destination = "/root/privkey.pem"
+  }
+
+  provisioner "file" {
+    connection {
+      host        = linode_instance.console.ip_address
+      private_key = chomp(file(local.sshPrivateKeyFilename))
+    }
+
+    source      = local.backupCredentialsFilename
+    destination = "/root/.aws/credentials"
   }
 
   depends_on = [
