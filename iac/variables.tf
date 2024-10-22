@@ -3,6 +3,15 @@ variable "settings" {
     general = {
       email  = "<your-email>"
       domain = "<your-domain>"
+      token  = "<token>"
+    }
+
+    console = {
+      namespace  = "akamai-dbaas"
+      identifier = "postgresql-console"
+      tags       = [ "demo" ]
+      type       = "g6-standard-2"
+      region     = "<region>"
     }
 
     cluster = {

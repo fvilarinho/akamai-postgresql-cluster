@@ -16,6 +16,7 @@ function prepareToExecute() {
   # Required binaries
   export TERRAFORM_CMD=$(which terraform)
   export KUBECTL_CMD=$(which kubectl)
+  export CERTBOT_CMD=$(which certbot)
   export LINODE_CLI_CMD=$(which linode-cli)
   export JQ_CMD=$(which jq)
 }
