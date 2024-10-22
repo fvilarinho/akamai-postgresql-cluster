@@ -12,6 +12,8 @@ variable "settings" {
       tags       = [ "demo" ]
       type       = "g6-standard-2"
       region     = "<region>"
+      user       = "<user>"
+      password   = "<password>"
     }
 
     cluster = {

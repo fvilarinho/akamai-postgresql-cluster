@@ -2,6 +2,7 @@
 locals {
   stackPrimaryHostname              = "${var.settings.cluster.identifier}-primary.${var.settings.general.domain}"
   stackReplicasHostname             = "${var.settings.cluster.identifier}-replicas.${var.settings.general.domain}"
+  consoleHostname                   = "${var.settings.console.identifier}.${var.settings.general.domain}"
   fetchStackHostnamesScriptFilename = abspath(pathexpand("../bin/fetchStackHostnames.sh"))
 }
 
@@ -49,4 +50,14 @@ resource "linode_domain_record" "replicas" {
     linode_domain.default,
     data.external.fetchStackHostnames
   ]
+}
+
+# Definition of the default DNS entry for the console instance.
+resource "linode_domain_record" "console" {
+  domain_id   = linode_domain.default.id
+  name        = local.consoleHostname
+  record_type = "A"
+  target      = linode_instance.console.ip_address
+  ttl_sec     = 30
+  depends_on  = [ linode_instance.console ]
 }

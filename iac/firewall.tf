@@ -34,7 +34,7 @@ resource "linode_firewall" "default" {
     action   = "ACCEPT"
     label    = "allowed-ips"
     protocol = "TCP"
-    ipv4     = concat(var.settings.cluster.allowedIps.ipv4, [ "${jsondecode(data.http.myIp.response_body).ip}/32" ])
+    ipv4     = concat(var.settings.cluster.allowedIps.ipv4, [ "${jsondecode(data.http.myIp.response_body).ip}/32", "${linode_instance.console.ip_address}/32" ])
     ipv6     = var.settings.cluster.allowedIps.ipv6
   }
 
