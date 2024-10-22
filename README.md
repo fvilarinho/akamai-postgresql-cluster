@@ -7,6 +7,7 @@ This project has the intention to demonstrate the how to deploy a PostgreSQL clu
 - [terraform 1.5.x](https://terraform.io)
 - [kubectl 1.31.x](https://kubernetes.io/docs/reference/kubectl/kubectl)
 - [linode-cli 5.52.x](https://www.linode.com/products/cli)
+- [certbot 2.11.x](https://certbot.eff.org)
 - [jq 1.7.x](https://jqlang.github.io/jq)
 - [Akamai Cloud Computing account](https://cloud.linode.com)
 - `Any Linux Distribution` or
@@ -21,7 +22,11 @@ environment:
 - **LKE (Linode Kubernetes Engine)**: Please check the file `iac/lke.tf` for more details. 
 - **Object Storage**: Please check the file `iac/object-storage.tf` for more details.
 - **Block Storage**: Please check the file `etc/manifest.yaml` for more details.
-- **[PostgreSQL](https://cloudnative-pg.io)**: Please check the file `etc/manifest.yaml` for more details.
+- **TLS Certificates**: Please check the file `iac/certificate.yaml` for more details.
+- **[PostgreSQL Server](https://cloudnative-pg.io)**: Please check the file `etc/manifest.yaml` for more details.
+- **[PostgreSQL Client](https://www.postgresql.org/docs/current/app-psql.html)**: Please check the file `iac/console.tf` 
+for more details.
+- **[PGAdmin 4](https://www.pgadmin.org/)**: Please check the file `etc/docker-compose.yaml` for more details.
 
 All Terraform files use `variables` that are stored in the `iac/variables.tf`.
 
