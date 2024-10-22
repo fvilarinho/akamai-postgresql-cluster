@@ -1,5 +1,8 @@
 /.idea/
 /etc/.backupCredentials
+/etc/.env
 /etc/.kubeconfig
 /iac/.terraform*
 /iac/terraform.tfvars
+/etc/tls/certs/fullchain.pem
+/etc/tls/private/privkey.pem
