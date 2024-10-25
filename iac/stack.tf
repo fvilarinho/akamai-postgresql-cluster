@@ -1,11 +1,12 @@
 # Required variables.
 locals {
-  applyStackOperatorScriptFilename      = abspath(pathexpand("../bin/applyStackOperator.sh"))
-  applyStackNamespaceScriptFilename     = abspath(pathexpand("../bin/applyStackNamespace.sh"))
-  applyStackSecretsScriptFilename       = abspath(pathexpand("../bin/applyStackSecrets.sh"))
-  applyStackServicesScriptFilename      = abspath(pathexpand("../bin/applyStackServices.sh"))
-  applyStackDeploymentScriptFilename    = abspath(pathexpand("../bin/applyStackDeployment.sh"))
-  applyStackLabelsAndTagsScriptFilename = abspath(pathexpand("../bin/applyStackLabelsAndTags.sh"))
+  applyStackOperatorScriptFilename        = abspath(pathexpand("../bin/applyStackOperator.sh"))
+  applyStackNamespaceScriptFilename       = abspath(pathexpand("../bin/applyStackNamespace.sh"))
+  applyStackSecretsScriptFilename         = abspath(pathexpand("../bin/applyStackSecrets.sh"))
+  applyStackServicesScriptFilename        = abspath(pathexpand("../bin/applyStackServices.sh"))
+  applyStackDeploymentScriptFilename      = abspath(pathexpand("../bin/applyStackDeployment.sh"))
+  applyStackScheduledBackupScriptFilename = abspath(pathexpand("../bin/applyStackScheduledBackup.sh"))
+  applyStackLabelsAndTagsScriptFilename   = abspath(pathexpand("../bin/applyStackLabelsAndTags.sh"))
 
   stackSecretsManifestFilename         = abspath(pathexpand("../etc/secrets.yaml"))
   stackServicesManifestFilename        = abspath(pathexpand("../etc/services.yaml"))
@@ -112,6 +113,25 @@ resource "null_resource" "applyStackDeployment" {
     null_resource.applyStackSecrets,
     null_resource.applyStackServices
   ]
+}
+
+# Applies the stack scheduled backup.
+resource "null_resource" "applyStackScheduledBackup" {
+  provisioner "local-exec" {
+    # Required variables.
+    environment = {
+      KUBECONFIG               = local.kubeconfigFilename
+      MANIFEST_FILENAME        = local.stackScheduledBackupManifestFilename
+      NAMESPACE                = var.settings.cluster.namespace
+      IDENTIFIER               = var.settings.cluster.identifier
+      DATABASE_BACKUP_SCHEDULE = var.settings.cluster.database.backup.schedule
+    }
+
+    quiet   = true
+    command = local.applyStackScheduledBackupScriptFilename
+  }
+
+  depends_on = [ null_resource.applyStackDeployment ]
 }
 
 # Applies the stack labels and tags.
