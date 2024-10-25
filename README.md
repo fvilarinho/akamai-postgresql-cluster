@@ -1,7 +1,7 @@
 ## Akamai PostgreSQL Cluster
 
 ### Introduction
-This project has the intention to demonstrate the how to deploy a PostgreSQL cluster in Akamai Cloud Computing.
+This project has the intention to demonstrate how to deploy a PostgreSQL cluster in Akamai Cloud Computing.
 
 ### Requirements
 - [terraform 1.5.x](https://terraform.io)
