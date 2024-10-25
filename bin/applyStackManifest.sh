@@ -133,7 +133,7 @@ function waitUntilStackIsReady() {
     echo "Waiting until the stack gets ready..."
   done
 
-  echo "Stack is not ready!"
+  echo "Stack is now ready!"
 }
 
 # Main function.
