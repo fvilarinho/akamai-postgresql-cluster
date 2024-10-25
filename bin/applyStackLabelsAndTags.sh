@@ -9,7 +9,7 @@ function checkDependencies() {
   fi
 
   if [ -z "$NAMESPACE" ]; then
-    echo "The cluster namespace file is not defined! Please define it first to continue!"
+    echo "The stack namespace file is not defined! Please define it first to continue!"
 
     exit 1
   fi
