@@ -16,15 +16,6 @@ spec:
   # Number of nodes in the cluster.
   instances: ${NODES_COUNT}
 
-  # Custom parameters.
-  postgresql:
-    parameters:
-      "pgaudit.log": "all, -misc"
-      "pgaudit.log_catalog": "off"
-      "pgaudit.log_parameter": "on"
-      "pgaudit.log_relation": "on"
-      port: ${DATABASE_PORT}
-
   # Initialization.
   bootstrap:
     initdb:

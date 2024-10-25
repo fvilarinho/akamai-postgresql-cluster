@@ -25,12 +25,6 @@ function checkDependencies() {
 
     exit 1
   fi
-
-  if [ -z "$DATABASE_PORT" ]; then
-    echo "The database port is not defined! Please define it first to continue!"
-
-    exit 1
-  fi
 }
 
 # Applies the stack services replacing the placeholders with the correspondent environment variable value.
@@ -41,7 +35,6 @@ function applyStackServices() {
 
   sed -i -e 's|${NAMESPACE}|'"$NAMESPACE"'|g' "$manifestFilename".tmp
   sed -i -e 's|${IDENTIFIER}|'"$IDENTIFIER"'|g' "$manifestFilename".tmp
-  sed -i -e 's|${DATABASE_PORT}|'"$DATABASE_PORT"'|g' "$manifestFilename".tmp
 
   $KUBECTL_CMD apply -f "$manifestFilename".tmp
 

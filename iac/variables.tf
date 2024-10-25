@@ -27,7 +27,6 @@ variable "settings" {
       # Database attributes.
       database = {
         version  = 17.0
-        port     = 5432
         name     = "defaultdb"
         user     = "<user>"
         password = "<password>"

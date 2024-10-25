@@ -32,12 +32,6 @@ function checkDependencies() {
     exit 1
   fi
 
-  if [ -z "$DATABASE_PORT" ]; then
-    echo "The database port is not defined! Please define it first to continue!"
-
-    exit 1
-  fi
-
   if [ -z "$DATABASE_NAME" ]; then
     echo "The database name is not defined! Please define it first to continue!"
 

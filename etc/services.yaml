@@ -13,8 +13,8 @@ spec:
     role: primary
 
   ports:
-    - port: ${DATABASE_PORT}
-      targetPort: ${DATABASE_PORT}
+    - port: 5432
+      targetPort: 5432
 ---
 apiVersion: v1
 kind: Service
@@ -30,5 +30,5 @@ spec:
     role: replica
 
   ports:
-    - port: ${DATABASE_PORT}
-      targetPort: ${DATABASE_PORT}
+    - port: 5432
+      targetPort: 5432

@@ -14,7 +14,7 @@ data "external" "fetchStackHostnames" {
     var.settings.cluster.identifier
   ]
 
-  depends_on = [ null_resource.applyStackManifest ]
+  depends_on = [ null_resource.applyStackServices ]
 }
 
 # Definition of the default DNS domain.

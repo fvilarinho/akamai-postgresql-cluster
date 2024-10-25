@@ -12,7 +12,7 @@ function checkDependencies() {
 # Applies the stack operator replacing the placeholders with the correspondent environment variable value.
 function applyStackOperator() {
   $KUBECTL_CMD apply --server-side -f \
-               https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.24/releases/cnpg-1.24.1.yaml
+               https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.23/releases/cnpg-1.23.5.yaml
 
   NAMESPACE=cnpg-system
 

@@ -40,6 +40,8 @@ resource "null_resource" "applyStackNamespace" {
     quiet   = true
     command = local.applyStackNamespaceScriptFilename
   }
+
+  depends_on = [ local_sensitive_file.kubeconfig ]
 }
 
 # Applies the stack secrets.
@@ -60,6 +62,8 @@ resource "null_resource" "applyStackSecrets" {
     quiet   = true
     command = local.applyStackSecretsScriptFilename
   }
+
+  depends_on = [ local_sensitive_file.kubeconfig ]
 }
 
 # Applies the stack services.
@@ -71,12 +75,13 @@ resource "null_resource" "applyStackServices" {
       MANIFEST_FILENAME = local.stackServicesManifestFilename
       NAMESPACE         = var.settings.cluster.namespace
       IDENTIFIER        = var.settings.cluster.identifier
-      DATABASE_PORT     = var.settings.cluster.database.port
     }
 
     quiet   = true
     command = local.applyStackServicesScriptFilename
   }
+
+  depends_on = [ local_sensitive_file.kubeconfig ]
 }
 
 # Applies the stack deployment.
@@ -85,15 +90,16 @@ resource "null_resource" "applyStackDeployment" {
     # Required variables.
     environment = {
       KUBECONFIG                = local.kubeconfigFilename
-      MANIFEST_FILENAME         = local.stackServicesManifestFilename
+      MANIFEST_FILENAME         = local.stackDeploymentManifestFilename
       NAMESPACE                 = var.settings.cluster.namespace
       IDENTIFIER                = var.settings.cluster.identifier
       DATABASE_VERSION          = var.settings.cluster.database.version
-      DATABASE_PORT             = var.settings.cluster.database.port
       DATABASE_NAME             = var.settings.cluster.database.name
       DATABASE_OWNER            = var.settings.cluster.database.user
       DATABASE_BACKUP_URL       = "https://${linode_object_storage_bucket.backup.hostname}"
       DATABASE_BACKUP_RETENTION = var.settings.cluster.database.backup.retention
+      NODES_COUNT               = var.settings.cluster.nodes.count
+      STORAGE_SIZE              = var.settings.cluster.storage.size
     }
 
     quiet   = true
