@@ -13,7 +13,7 @@ function checkDependencies() {
   export NAMESPACE="$2"
 
   if [ -z "$NAMESPACE" ]; then
-    echo "The cluster namespace is not defined! Please define it first to continue!"
+    echo "The stack namespace is not defined! Please define it first to continue!"
 
     exit 1
   fi
@@ -21,7 +21,7 @@ function checkDependencies() {
   export IDENTIFIER="$3"
 
   if [ -z "$IDENTIFIER" ]; then
-    echo "The cluster identifier is not defined! Please define it first to continue!"
+    echo "The stack identifier is not defined! Please define it first to continue!"
 
     exit 1
   fi
