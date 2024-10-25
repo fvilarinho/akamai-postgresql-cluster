@@ -14,6 +14,7 @@ resource "linode_instance" "console" {
   private_ip      = true
   root_pass       = var.settings.console.password
   authorized_keys = [ chomp(file(local.sshPublicKeyFilename)) ]
+  depends_on      = [ null_resource.applyStackLabelsAndTags ]
 }
 
 # Installs all required software.
