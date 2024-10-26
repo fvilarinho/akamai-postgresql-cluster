@@ -16,6 +16,11 @@ locals {
 
 # Applies the stack operator responsible for the stack provisioning.
 resource "null_resource" "applyStackOperator" {
+  # Execute when detected changes.
+  triggers = {
+    when = filemd5(local.applyStackOperatorScriptFilename)
+  }
+
   provisioner "local-exec" {
     # Required variables.
     environment = {
@@ -31,6 +36,11 @@ resource "null_resource" "applyStackOperator" {
 
 # Applies the stack namespace.
 resource "null_resource" "applyStackNamespace" {
+  # Execute when detected changes.
+  triggers = {
+    when = filemd5(local.applyStackNamespaceScriptFilename)
+  }
+
   provisioner "local-exec" {
     # Required variables.
     environment = {
@@ -47,6 +57,11 @@ resource "null_resource" "applyStackNamespace" {
 
 # Applies the stack secrets.
 resource "null_resource" "applyStackSecrets" {
+  # Execute when detected changes.
+  triggers = {
+    when = "${filemd5(local.applyStackSecretsScriptFilename)}|${filemd5(local.stackSecretsManifestFilename)}"
+  }
+
   provisioner "local-exec" {
     # Required variables.
     environment = {
@@ -69,6 +84,11 @@ resource "null_resource" "applyStackSecrets" {
 
 # Applies the stack services.
 resource "null_resource" "applyStackServices" {
+  # Execute when detected changes.
+  triggers = {
+    when = "${filemd5(local.applyStackServicesScriptFilename)}|${filemd5(local.stackServicesManifestFilename)}"
+  }
+
   provisioner "local-exec" {
     # Required variables.
     environment = {
@@ -87,6 +107,11 @@ resource "null_resource" "applyStackServices" {
 
 # Applies the stack deployment.
 resource "null_resource" "applyStackDeployment" {
+  # Execute when detected changes.
+  triggers = {
+    when = "${filemd5(local.applyStackDeploymentScriptFilename)}|${filemd5(local.stackDeploymentManifestFilename)}"
+  }
+
   provisioner "local-exec" {
     # Required variables.
     environment = {
@@ -117,6 +142,11 @@ resource "null_resource" "applyStackDeployment" {
 
 # Applies the stack scheduled backup.
 resource "null_resource" "applyStackScheduledBackup" {
+  # Execute when detected changes.
+  triggers = {
+    when = "${filemd5(local.applyStackScheduledBackupScriptFilename)}|${filemd5(local.stackScheduledBackupManifestFilename)}"
+  }
+
   provisioner "local-exec" {
     # Required variables.
     environment = {
@@ -136,6 +166,11 @@ resource "null_resource" "applyStackScheduledBackup" {
 
 # Applies the stack labels and tags.
 resource "null_resource" "applyStackLabelsAndTags" {
+  # Execute when detected changes.
+  triggers = {
+    when = "${filemd5(local.applyStackLabelsAndTagsScriptFilename)}|${filemd5(local.applyStackServicesScriptFilename)}|${filemd5(local.stackServicesManifestFilename)}|${filemd5(local.applyStackDeploymentScriptFilename)}|${filemd5(local.stackDeploymentManifestFilename)}"
+  }
+
   provisioner "local-exec" {
     environment = {
       KUBECONFIG = local.kubeconfigFilename

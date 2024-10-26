@@ -28,10 +28,6 @@ spec:
   storage:
     size: ${STORAGE_SIZE}Gi
 
-  # Monitoring definition.
-  monitoring:
-    enablePodMonitor: true
-
   # Backup definition.
   backup:
     barmanObjectStore:
