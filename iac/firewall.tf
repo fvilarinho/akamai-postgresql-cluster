@@ -39,10 +39,12 @@ resource "linode_firewall" "default" {
   }
 
   nodebalancers = [ for nodeBalancer in data.linode_nodebalancers.default.nodebalancers : nodeBalancer.id ]
+  linodes       = [ linode_instance.console.id ]
 
   depends_on = [
     null_resource.applyStackServices,
     data.http.myIp,
-    data.linode_nodebalancers.default
+    data.linode_nodebalancers.default,
+    linode_instance.console
   ]
 }
