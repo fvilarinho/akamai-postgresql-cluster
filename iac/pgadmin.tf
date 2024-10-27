@@ -1,85 +1,92 @@
 # Required variables.
 locals {
-  sshPrivateKeyFilename = abspath(pathexpand("~/.ssh/id_rsa"))
-  sshPublicKeyFilename  = abspath(pathexpand("~/.ssh/id_rsa.pub"))
+  pgadminNginxConfFilename     = abspath(pathexpand("../etc/pgadmin/nginx/conf.d/default.conf"))
+  pgadminDockerComposeFilename = abspath(pathexpand("../etc/pgadmin/docker-compose.yaml"))
+  pgadminEnvironmentFilename   = abspath(pathexpand("../etc/pgadmin/.env"))
 }
 
-# Definition of the console instance.
-resource "linode_instance" "console" {
-  label           = var.settings.console.identifier
-  tags            = concat(var.settings.console.tags, [ var.settings.console.namespace ])
-  region          = var.settings.console.region
-  type            = var.settings.console.type
+# Definition of the PostgreSQL admin environment variables.
+resource "local_sensitive_file" "pgadminEnvironment" {
+  filename = local.pgadminEnvironmentFilename
+  content = <<EOT
+export PGADMIN_USER=${var.settings.pgadmin.user}
+export PGADMIN_PASSWORD=${var.settings.pgadmin.password}
+EOT
+}
+
+# Definition of the PostgreSQL admin instance.
+resource "linode_instance" "pgadmin" {
+  label           = var.settings.pgadmin.identifier
+  tags            = concat(var.settings.pgadmin.tags, [ var.settings.pgadmin.namespace ])
+  region          = var.settings.pgadmin.region
+  type            = var.settings.pgadmin.type
   image           = "linode/debian11"
   private_ip      = true
-  root_pass       = var.settings.console.password
+  root_pass       = var.settings.pgadmin.password
   authorized_keys = [ chomp(file(local.sshPublicKeyFilename)) ]
   depends_on      = [ null_resource.applyStackLabelsAndTags ]
 }
 
-# Installs all required software.
-resource "null_resource" "consoleSetup" {
+# Installs all required software for PostgreSQL admin.
+resource "null_resource" "pgadminSetup" {
   provisioner "remote-exec" {
     connection {
-      host        = linode_instance.console.ip_address
+      host        = linode_instance.pgadmin.ip_address
       private_key = chomp(file(local.sshPrivateKeyFilename))
     }
 
     inline = [
       "apt update",
       "apt -y upgrade",
-      "hostnamectl set-hostname ${var.settings.console.identifier}",
+      "hostnamectl set-hostname ${var.settings.pgadmin.identifier}",
       "apt -y install curl wget unzip zip dnsutils net-tools htop",
       "curl https://get.docker.com | sh -",
       "systemctl enable docker",
       "systemctl start docker",
       "apt -y install postgresql-client",
-      "apt -y install python3 python3-pip",
-      "pip3 install linode-cli --upgrade",
-      "pip3 install boto3",
       "mkdir -p /root/.aws",
       "apt -y install awscli"
     ]
   }
 
-  depends_on = [ linode_instance.console ]
+  depends_on = [ linode_instance.pgadmin ]
 }
 
-# Upload all required files.
-resource "null_resource" "consoleFiles" {
+# Upload all required files for PostgreSQL admin.
+resource "null_resource" "pgadminFiles" {
   provisioner "file" {
     connection {
-      host        = linode_instance.console.ip_address
+      host        = linode_instance.pgadmin.ip_address
       private_key = chomp(file(local.sshPrivateKeyFilename))
     }
 
-    source      = local.environmentFilename
+    source      = local.pgadminEnvironmentFilename
     destination = "/root/.env"
   }
 
   provisioner "file" {
     connection {
-      host        = linode_instance.console.ip_address
+      host        = linode_instance.pgadmin.ip_address
       private_key = chomp(file(local.sshPrivateKeyFilename))
     }
 
-    source      = "../etc/docker-compose.yaml"
+    source      = local.pgadminDockerComposeFilename
     destination = "/root/docker-compose.yaml"
   }
 
   provisioner "file" {
     connection {
-      host        = linode_instance.console.ip_address
+      host        = linode_instance.pgadmin.ip_address
       private_key = chomp(file(local.sshPrivateKeyFilename))
     }
 
-    source      = "../etc/nginx/conf.d/default.conf"
+    source      = local.pgadminNginxConfFilename
     destination = "/root/default.conf"
   }
 
   provisioner "file" {
     connection {
-      host        = linode_instance.console.ip_address
+      host        = linode_instance.pgadmin.ip_address
       private_key = chomp(file(local.sshPrivateKeyFilename))
     }
 
@@ -89,7 +96,7 @@ resource "null_resource" "consoleFiles" {
 
   provisioner "file" {
     connection {
-      host        = linode_instance.console.ip_address
+      host        = linode_instance.pgadmin.ip_address
       private_key = chomp(file(local.sshPrivateKeyFilename))
     }
 
@@ -99,7 +106,7 @@ resource "null_resource" "consoleFiles" {
 
   provisioner "file" {
     connection {
-      host        = linode_instance.console.ip_address
+      host        = linode_instance.pgadmin.ip_address
       private_key = chomp(file(local.sshPrivateKeyFilename))
     }
 
@@ -108,18 +115,18 @@ resource "null_resource" "consoleFiles" {
   }
 
   depends_on = [
-    null_resource.consoleSetup,
+    null_resource.pgadminSetup,
     local_sensitive_file.certificate,
     local_sensitive_file.certificateKey,
-    local_sensitive_file.environment
+    local_sensitive_file.pgadminEnvironment
   ]
 }
 
-# Starts the console.
-resource "null_resource" "startConsole" {
+# Starts the PostgreSQL admin.
+resource "null_resource" "startPgAdmin" {
   provisioner "remote-exec" {
     connection {
-      host = linode_instance.console.ip_address
+      host = linode_instance.pgadmin.ip_address
       private_key = chomp(file(local.sshPrivateKeyFilename))
     }
 
@@ -129,5 +136,5 @@ resource "null_resource" "startConsole" {
     ]
   }
 
-  depends_on = [ null_resource.consoleFiles ]
+  depends_on = [ null_resource.pgadminFiles ]
 }

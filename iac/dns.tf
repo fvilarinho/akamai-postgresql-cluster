@@ -1,8 +1,5 @@
 # Required variables.
 locals {
-  stackPrimaryHostname              = "${var.settings.cluster.identifier}-primary.${var.settings.general.domain}"
-  stackReplicasHostname             = "${var.settings.cluster.identifier}-replicas.${var.settings.general.domain}"
-  consoleHostname                   = "${var.settings.console.identifier}.${var.settings.general.domain}"
   fetchStackHostnamesScriptFilename = abspath(pathexpand("../bin/fetchStackHostnames.sh"))
 }
 
@@ -26,10 +23,10 @@ resource "linode_domain" "default" {
   tags      = concat(var.settings.cluster.tags, [ var.settings.cluster.namespace ])
 }
 
-# Definition of the default DNS entry for the primary instance.
+# Definition of the default DNS entry for the PostgreSQL primary instance.
 resource "linode_domain_record" "primary" {
   domain_id   = linode_domain.default.id
-  name        = local.stackPrimaryHostname
+  name        = "${var.settings.cluster.identifier}-primary.${var.settings.general.domain}"
   record_type = "CNAME"
   target      = data.external.fetchStackHostnames.result.primary
   ttl_sec     = 30
@@ -39,10 +36,10 @@ resource "linode_domain_record" "primary" {
   ]
 }
 
-# Definition of the default DNS entry for the replica instances.
+# Definition of the default DNS entry for the PostgreSQL replica instances.
 resource "linode_domain_record" "replicas" {
   domain_id   = linode_domain.default.id
-  name        = local.stackReplicasHostname
+  name        = "${var.settings.cluster.identifier}-replicas.${var.settings.general.domain}"
   record_type = "CNAME"
   target      = data.external.fetchStackHostnames.result.replicas
   ttl_sec     = 30
@@ -52,12 +49,12 @@ resource "linode_domain_record" "replicas" {
   ]
 }
 
-# Definition of the default DNS entry for the console instance.
-resource "linode_domain_record" "console" {
+# Definition of the default DNS entry for the PostgreSQL admin instance.
+resource "linode_domain_record" "pgadmin" {
   domain_id   = linode_domain.default.id
-  name        = local.consoleHostname
+  name        = "${var.settings.pgadmin.identifier}.${var.settings.general.domain}"
   record_type = "A"
-  target      = linode_instance.console.ip_address
+  target      = linode_instance.pgadmin.ip_address
   ttl_sec     = 30
-  depends_on  = [ linode_instance.console ]
+  depends_on  = [ linode_instance.pgadmin ]
 }

@@ -32,16 +32,7 @@ provider "linode" {
   token = var.settings.general.token
 }
 
-# Creates the environment variables file.
 locals {
-  environmentFilename = abspath(pathexpand("../etc/.env"))
-}
-
-resource "local_sensitive_file" "environment" {
-  filename = local.environmentFilename
-  content = <<EOT
-export CONSOLE_USER=${var.settings.console.user}
-export CONSOLE_PASSWORD=${var.settings.console.password}
-export LINODE_CLI_TOKEN=${var.settings.general.token}
-EOT
+  sshPrivateKeyFilename = abspath(pathexpand("~/.ssh/id_rsa"))
+  sshPublicKeyFilename = abspath(pathexpand("~/.ssh/id_rsa.pub"))
 }

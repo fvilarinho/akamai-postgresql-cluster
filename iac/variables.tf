@@ -7,10 +7,10 @@ variable "settings" {
       token  = "<token>"
     }
 
-    # Definition of the PostgreSQL console instance.
-    console = {
+    # Definition of the PostgreSQL admin instance.
+    pgadmin = {
       namespace  = "akamai-dbaas"
-      identifier = "postgresql-console"
+      identifier = "postgresql-admin"
       tags       = [ "demo" ]
       type       = "g6-standard-2"
       region     = "<region>"

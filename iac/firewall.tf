@@ -35,17 +35,17 @@ resource "linode_firewall" "default" {
     action   = "ACCEPT"
     label    = "allowed-ips"
     protocol = "TCP"
-    ipv4     = concat(var.settings.cluster.allowedIps.ipv4, [ "${jsondecode(data.http.myIp.response_body).ip}/32", "${linode_instance.console.ip_address}/32" ])
+    ipv4     = concat(var.settings.cluster.allowedIps.ipv4, [ "${jsondecode(data.http.myIp.response_body).ip}/32", "${linode_instance.pgadmin.ip_address}/32" ])
     ipv6     = var.settings.cluster.allowedIps.ipv6
   }
 
   nodebalancers = [ for nodeBalancer in data.linode_nodebalancers.default.nodebalancers : nodeBalancer.id ]
-  linodes       = [ linode_instance.console.id ]
+  linodes       = [ linode_instance.pgadmin.id ]
 
   depends_on = [
     null_resource.applyStackServices,
     data.http.myIp,
     data.linode_nodebalancers.default,
-    linode_instance.console
+    linode_instance.pgadmin
   ]
 }
