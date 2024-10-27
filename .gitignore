@@ -1,7 +1,7 @@
 /.idea/
 /etc/.backupCredentials
 /etc/.kubeconfig
-/etc/grafana/.env
+/etc/pgadmin/.env
 /etc/tls/certs/fullchain.pem
 /etc/tls/private/privkey.pem
 /iac/.terraform*
