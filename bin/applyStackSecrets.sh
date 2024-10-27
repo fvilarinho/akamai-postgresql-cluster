@@ -43,6 +43,12 @@ function checkDependencies() {
 
     exit 1
   fi
+
+  if [ -z "$DATABASE_CONNECTION_STRING" ]; then
+    echo "The database connection string is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
 }
 
 # Applies the stack manifest replacing the placeholders with the correspondent environment variable value.
@@ -57,6 +63,7 @@ function applyStackSecrets() {
   sed -i -e 's|${DATABASE_PASSWORD}|'"$DATABASE_PASSWORD"'|g' "$manifestFilename".tmp
   sed -i -e 's|${DATABASE_BACKUP_ACCESS_KEY}|'"$DATABASE_BACKUP_ACCESS_KEY"'|g' "$manifestFilename".tmp
   sed -i -e 's|${DATABASE_BACKUP_SECRET_KEY}|'"$DATABASE_BACKUP_SECRET_KEY"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${DATABASE_CONNECTION_STRING}|'"$DATABASE_CONNECTION_STRING"'|g' "$manifestFilename".tmp
 
   $KUBECTL_CMD apply -f "$manifestFilename".tmp
 

@@ -33,20 +33,27 @@ function fetchStackHostnames() {
 
   PRIMARY_HOSTNAME=
   REPLICAS_HOSTNAME=
+  MONITORING_HOSTNAME=
 
   # Waits until LKE cluster load balancer is ready.
   while true; do
-    PRIMARY_HOSTNAME=$($KUBECTL_CMD get service "$IDENTIFIER"-ingress-primary \
+    PRIMARY_HOSTNAME=$($KUBECTL_CMD get service "$IDENTIFIER"-primary \
                                     -n "$NAMESPACE" \
                                     -o json | $JQ_CMD -r '.status.loadBalancer.ingress[].hostname')
 
     if [ -n "$PRIMARY_HOSTNAME" ]; then
-      REPLICAS_HOSTNAME=$($KUBECTL_CMD get service "$IDENTIFIER"-ingress-replicas \
+      REPLICAS_HOSTNAME=$($KUBECTL_CMD get service "$IDENTIFIER"-replicas \
                                        -n "$NAMESPACE" \
                                        -o json | $JQ_CMD -r '.status.loadBalancer.ingress[].hostname')
 
       if [ -n "$REPLICAS_HOSTNAME" ]; then
-        break
+        MONITORING_HOSTNAME=$($KUBECTL_CMD get service "$IDENTIFIER"-monitoring \
+                                         -n "$NAMESPACE" \
+                                         -o json | $JQ_CMD -r '.status.loadBalancer.ingress[].hostname')
+
+        if [ -n "$MONITORING_HOSTNAME" ]; then
+          break
+        fi
       fi
     fi
 
@@ -54,7 +61,7 @@ function fetchStackHostnames() {
   done
 
   # Returns the fetched hostnames.
-  echo "{\"primary\": \"$PRIMARY_HOSTNAME\", \"replicas\": \"$REPLICAS_HOSTNAME\"}"
+  echo "{\"primary\": \"$PRIMARY_HOSTNAME\", \"replicas\": \"$REPLICAS_HOSTNAME\", \"monitoring\": \"$MONITORING_HOSTNAME\"}"
 }
 
 fetchStackHostnames "$1" "$2" "$3"

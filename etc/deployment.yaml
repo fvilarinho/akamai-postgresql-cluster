@@ -36,8 +36,47 @@ spec:
       s3Credentials:
         accessKeyId:
           name: ${IDENTIFIER}-backup-secret
-          key: ACCESS_KEY_ID
+          key: accessKey
         secretAccessKey:
           name: ${IDENTIFIER}-backup-secret
-          key: ACCESS_SECRET_KEY
+          key: secretKey
     retentionPolicy: "${DATABASE_BACKUP_RETENTION}d"
+---
+# Definition of the monitoring agent.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: ${NAMESPACE}
+  name: ${IDENTIFIER}-monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${IDENTIFIER}-monitoring
+  template:
+    metadata:
+      labels:
+        app: ${IDENTIFIER}-monitoring
+    spec:
+      containers:
+        - name: ${IDENTIFIER}-monitoring
+          image: quay.io/prometheuscommunity/postgres-exporter:latest
+          imagePullPolicy: Always
+          env:
+            - name: DATA_SOURCE_URI
+              valueFrom:
+                secretKeyRef:
+                  name: ${IDENTIFIER}-monitoring-secret
+                  key: connectionString
+            - name: DATA_SOURCE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ${IDENTIFIER}-monitoring-secret
+                  key: username
+            - name: DATA_SOURCE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: ${IDENTIFIER}-monitoring-secret
+                  key: password
+          ports:
+            - containerPort: 9187

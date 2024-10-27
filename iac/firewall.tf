@@ -9,7 +9,8 @@ data "linode_nodebalancers" "default" {
     name   = "hostname"
     values = [
       data.external.fetchStackHostnames.result.primary,
-      data.external.fetchStackHostnames.result.replicas
+      data.external.fetchStackHostnames.result.replicas,
+      data.external.fetchStackHostnames.result.monitoring
     ]
   }
 

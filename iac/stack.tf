@@ -69,6 +69,7 @@ resource "null_resource" "applyStackSecrets" {
       MANIFEST_FILENAME          = local.stackSecretsManifestFilename
       NAMESPACE                  = var.settings.cluster.namespace
       IDENTIFIER                 = var.settings.cluster.identifier
+      DATABASE_CONNECTION_STRING = base64encode("${var.settings.cluster.identifier}-primary.${var.settings.cluster.namespace}.svc.cluster.local:5432/${var.settings.cluster.database.name}?sslmode=disable")
       DATABASE_USER              = base64encode(var.settings.cluster.database.user)
       DATABASE_PASSWORD          = base64encode(var.settings.cluster.database.password)
       DATABASE_BACKUP_ACCESS_KEY = base64encode(linode_object_storage_key.backup.access_key)
