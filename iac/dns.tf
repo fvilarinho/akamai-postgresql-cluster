@@ -49,6 +49,19 @@ resource "linode_domain_record" "replicas" {
   ]
 }
 
+# Definition of the default DNS entry for the PostgreSQL monitoring server instance.
+resource "linode_domain_record" "monitoringServer" {
+  domain_id   = linode_domain.default.id
+  name        = "${var.settings.cluster.identifier}-monitoring.${var.settings.general.domain}"
+  record_type = "CNAME"
+  target      = data.external.fetchStackHostnames.result.monitoring
+  ttl_sec     = 30
+  depends_on  = [
+    linode_domain.default,
+    data.external.fetchStackHostnames
+  ]
+}
+
 # Definition of the default DNS entry for the PostgreSQL admin instance.
 resource "linode_domain_record" "pgadmin" {
   domain_id   = linode_domain.default.id

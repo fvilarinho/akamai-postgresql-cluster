@@ -45,38 +45,83 @@ spec:
 # Definition of the monitoring agent.
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
   namespace: ${NAMESPACE}
   name: ${IDENTIFIER}-monitoring-agent
+
 spec:
   replicas: 1
+
   selector:
     matchLabels:
       app: ${IDENTIFIER}-monitoring-agent
+
   template:
     metadata:
       labels:
         app: ${IDENTIFIER}-monitoring-agent
+
     spec:
       containers:
         - name: ${IDENTIFIER}-monitoring-agent
           image: quay.io/prometheuscommunity/postgres-exporter:latest
           imagePullPolicy: Always
+
           env:
             - name: DATA_SOURCE_URI
               valueFrom:
                 secretKeyRef:
                   name: ${IDENTIFIER}-monitoring-secret
                   key: connectionString
+
             - name: DATA_SOURCE_USER
               valueFrom:
                 secretKeyRef:
                   name: ${IDENTIFIER}-monitoring-secret
                   key: username
+
             - name: DATA_SOURCE_PASS
               valueFrom:
                 secretKeyRef:
                   name: ${IDENTIFIER}-monitoring-secret
                   key: password
+
           ports:
             - containerPort: 9187
+---
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  namespace: ${NAMESPACE}
+  name: ${IDENTIFIER}-monitoring-server
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${IDENTIFIER}-monitoring-server
+
+  template:
+    metadata:
+      labels:
+        app: ${IDENTIFIER}-monitoring-server
+    spec:
+      containers:
+        - name: ${IDENTIFIER}-monitoring-server
+          image: prom/prometheus:latest
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+
+          ports:
+            - containerPort: 9090
+
+          volumeMounts:
+            - name: ${IDENTIFIER}-monitoring-config
+              mountPath: /etc/prometheus
+
+      volumes:
+        - name: ${IDENTIFIER}-monitoring-config
+          configMap:
+            name: ${IDENTIFIER}-monitoring-config

@@ -47,7 +47,13 @@ function fetchStackHostnames() {
                                        -o json | $JQ_CMD -r '.status.loadBalancer.ingress[].hostname')
 
       if [ -n "$REPLICAS_HOSTNAME" ]; then
-        break
+        MONITORING_HOSTNAME=$($KUBECTL_CMD get service "$IDENTIFIER"-monitoring-server \
+                                           -n "$NAMESPACE" \
+                                           -o json | $JQ_CMD -r '.status.loadBalancer.ingress[].hostname')
+
+        if [ -n "$MONITORING_HOSTNAME" ]; then
+          break
+        fi
       fi
     fi
 
@@ -55,7 +61,7 @@ function fetchStackHostnames() {
   done
 
   # Returns the fetched hostnames.
-  echo "{\"primary\": \"$PRIMARY_HOSTNAME\", \"replicas\": \"$REPLICAS_HOSTNAME\"}"
+  echo "{\"primary\": \"$PRIMARY_HOSTNAME\", \"replicas\": \"$REPLICAS_HOSTNAME\", \"monitoring\": \"$MONITORING_HOSTNAME\"}"
 }
 
 fetchStackHostnames "$1" "$2" "$3"

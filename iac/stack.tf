@@ -2,12 +2,14 @@
 locals {
   applyStackOperatorScriptFilename        = abspath(pathexpand("../bin/applyStackOperator.sh"))
   applyStackNamespaceScriptFilename       = abspath(pathexpand("../bin/applyStackNamespace.sh"))
+  applyStackConfigMapsScriptFilename      = abspath(pathexpand("../bin/applyStackConfigMaps.sh"))
   applyStackSecretsScriptFilename         = abspath(pathexpand("../bin/applyStackSecrets.sh"))
   applyStackServicesScriptFilename        = abspath(pathexpand("../bin/applyStackServices.sh"))
   applyStackDeploymentScriptFilename      = abspath(pathexpand("../bin/applyStackDeployment.sh"))
   applyStackScheduledBackupScriptFilename = abspath(pathexpand("../bin/applyStackScheduledBackup.sh"))
   applyStackLabelsAndTagsScriptFilename   = abspath(pathexpand("../bin/applyStackLabelsAndTags.sh"))
 
+  stackConfigMapsManifestFilename      = abspath(pathexpand("../etc/configMaps.yaml"))
   stackSecretsManifestFilename         = abspath(pathexpand("../etc/secrets.yaml"))
   stackServicesManifestFilename        = abspath(pathexpand("../etc/services.yaml"))
   stackDeploymentManifestFilename      = abspath(pathexpand("../etc/deployment.yaml"))
@@ -83,6 +85,29 @@ resource "null_resource" "applyStackSecrets" {
   depends_on = [ local_sensitive_file.kubeconfig ]
 }
 
+# Applies the stack config maps.
+resource "null_resource" "applyStackConfigMaps" {
+  # Execute when detected changes.
+  triggers = {
+    when = "${filemd5(local.applyStackConfigMapsScriptFilename)}|${filemd5(local.stackConfigMapsManifestFilename)}"
+  }
+
+  provisioner "local-exec" {
+    # Required variables.
+    environment = {
+      KUBECONFIG        = local.kubeconfigFilename
+      MANIFEST_FILENAME = local.stackConfigMapsManifestFilename
+      NAMESPACE         = var.settings.cluster.namespace
+      IDENTIFIER        = var.settings.cluster.identifier
+    }
+
+    quiet   = true
+    command = local.applyStackConfigMapsScriptFilename
+  }
+
+  depends_on = [ local_sensitive_file.kubeconfig ]
+}
+
 # Applies the stack services.
 resource "null_resource" "applyStackServices" {
   # Execute when detected changes.
@@ -136,6 +161,7 @@ resource "null_resource" "applyStackDeployment" {
   depends_on = [
     null_resource.applyStackOperator,
     null_resource.applyStackNamespace,
+    null_resource.applyStackConfigMaps,
     null_resource.applyStackSecrets,
     null_resource.applyStackServices
   ]
