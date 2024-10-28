@@ -7,6 +7,17 @@ variable "settings" {
       token  = "<token>"
     }
 
+    # Definition of the Grafana instance.
+    grafana = {
+      namespace  = "akamai-dbaas"
+      identifier = "grafana"
+      tags       = [ "demo" ]
+      type       = "g6-standard-2"
+      region     = "<region>"
+      user       = "<user>"
+      password   = "<password>"
+    }
+
     # Definition of the PostgreSQL admin instance.
     pgadmin = {
       namespace  = "akamai-dbaas"

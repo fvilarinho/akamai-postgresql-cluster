@@ -9,7 +9,8 @@ data "linode_nodebalancers" "default" {
     name   = "hostname"
     values = [
       data.external.fetchStackHostnames.result.primary,
-      data.external.fetchStackHostnames.result.replicas
+      data.external.fetchStackHostnames.result.replicas,
+      data.external.fetchStackHostnames.result.monitoring
     ]
   }
 
@@ -34,12 +35,12 @@ resource "linode_firewall" "default" {
     action   = "ACCEPT"
     label    = "allowed-ips"
     protocol = "TCP"
-    ipv4     = concat(var.settings.cluster.allowedIps.ipv4, [ "${jsondecode(data.http.myIp.response_body).ip}/32", "${linode_instance.pgadmin.ip_address}/32" ])
+    ipv4     = concat(var.settings.cluster.allowedIps.ipv4, [ "${jsondecode(data.http.myIp.response_body).ip}/32", "${linode_instance.pgadmin.ip_address}/32", "${linode_instance.grafana.ip_address}/32" ])
     ipv6     = var.settings.cluster.allowedIps.ipv6
   }
 
   nodebalancers = [ for nodeBalancer in data.linode_nodebalancers.default.nodebalancers : nodeBalancer.id ]
-  linodes       = [ linode_instance.pgadmin.id ]
+  linodes       = [ linode_instance.pgadmin.id, linode_instance.grafana.id ]
 
   depends_on = [
     null_resource.applyStackServices,
