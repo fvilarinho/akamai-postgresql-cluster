@@ -47,19 +47,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: ${NAMESPACE}
-  name: ${IDENTIFIER}-monitoring
+  name: ${IDENTIFIER}-monitoring-agent
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ${IDENTIFIER}-monitoring
+      app: ${IDENTIFIER}-monitoring-agent
   template:
     metadata:
       labels:
-        app: ${IDENTIFIER}-monitoring
+        app: ${IDENTIFIER}-monitoring-agent
     spec:
       containers:
-        - name: ${IDENTIFIER}-monitoring
+        - name: ${IDENTIFIER}-monitoring-agent
           image: quay.io/prometheuscommunity/postgres-exporter:latest
           imagePullPolicy: Always
           env:

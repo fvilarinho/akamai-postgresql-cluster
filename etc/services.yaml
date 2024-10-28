@@ -38,13 +38,11 @@ kind: Service
 
 metadata:
   namespace: ${NAMESPACE}
-  name: ${IDENTIFIER}-monitoring
+  name: ${IDENTIFIER}-monitoring-agent
 
 spec:
-  type: LoadBalancer
-
   selector:
-    app: ${IDENTIFIER}-monitoring
+    app: ${IDENTIFIER}-monitoring-agent
 
   ports:
     - protocol: TCP
