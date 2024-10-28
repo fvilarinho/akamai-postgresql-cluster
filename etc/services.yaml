@@ -1,4 +1,4 @@
-# Definition of the cluster load balancers (primary and replicas).
+# Definition of the stack load balancers (primary, replicas and monitoring).
 apiVersion: v1
 kind: Service
 

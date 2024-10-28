@@ -42,7 +42,7 @@ spec:
           key: secretKey
     retentionPolicy: "${DATABASE_BACKUP_RETENTION}d"
 ---
-# Definition of the monitoring agent.
+# Definition of the monitoring agent (Postgresql Prometheus Exporter).
 apiVersion: apps/v1
 kind: Deployment
 
@@ -90,6 +90,7 @@ spec:
           ports:
             - containerPort: 9187
 ---
+# Definition of the monitoring server (Prometheus).
 apiVersion: apps/v1
 kind: Deployment
 

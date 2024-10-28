@@ -1,3 +1,4 @@
+# Definition of the stack configurations.
 apiVersion: v1
 kind: ConfigMap
 metadata:
