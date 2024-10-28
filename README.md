@@ -16,17 +16,20 @@ This project has the intention to demonstrate how to deploy a PostgreSQL cluster
 
 It automates (using **Terraform**) the provisioning of the following resources in Akamai Cloud Computing (former Linode) 
 environment:
+- **TLS Certificates**: Please check the file `iac/certificate.yaml` for more details.
 - **Domains (Authoritative DNS Server)**: Please check the file `iac/dns.tf` for more details.
 - **Cloud Firewall**: Please check the file `iac/firewall.tf` for more details.
-- **Node Balancers**: Please check the file `etc/manifest.yaml` for more details.
-- **LKE (Linode Kubernetes Engine)**: Please check the file `iac/lke.tf` for more details. 
+- **Node Balancers**: Please check the file `etc/services.yaml` for more details.
 - **Object Storage**: Please check the file `iac/object-storage.tf` for more details.
-- **Block Storage**: Please check the file `etc/manifest.yaml` for more details.
-- **TLS Certificates**: Please check the file `iac/certificate.yaml` for more details.
-- **[PostgreSQL Server](https://cloudnative-pg.io)**: Please check the file `etc/manifest.yaml` for more details.
-- **[PostgreSQL Client](https://www.postgresql.org/docs/current/app-psql.html)**: Please check the file `iac/console.tf` 
-for more details.
-- **[PGAdmin 4](https://www.pgadmin.org/)**: Please check the file `etc/docker-compose.yaml` for more details.
+- **Block Storage**: Please check the file `etc/deployment.yaml` for more details.
+- **LKE Cluster**: Please check the file `iac/lke.tf` for more details. 
+- **LKE Secrets and Config Maps**: Please check the files `etc/secrets.yaml` and `etc/configMaps.yaml` for more details.
+- **LKE Cluster Scheduled Backup**: Please check the file `etc/scheduledBackup.yaml` for more details.
+- **[Prometheus](https://prometheus.io)**: Please check the file `etc/deployment.yaml` for more details.
+- **[PostgreSQL Server](https://cloudnative-pg.io)**: Please check the file `etc/deployment.yaml` for more details.
+- **[PostgreSQL Client](https://www.postgresql.org/docs/current/app-psql.html)**: Please check the file `iac/pgadmin.tf` for more details.
+- **[PGAdmin 4](https://www.pgadmin.org)**: Please check the file `iac/pgadmin.tf` for more details.
+- **[Grafana](https://www.grafana.com)**: Please check the file `iac/grafana.tf` for more details.
 
 All Terraform files use `variables` that are stored in the `iac/variables.tf`.
 
