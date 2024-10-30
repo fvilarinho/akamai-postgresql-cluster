@@ -1,17 +1,11 @@
 # Required variables.
 locals {
-  fetchStackHostnamesScriptFilename = abspath(pathexpand("../bin/fetchStackHostnames.sh"))
-}
-
-data "external" "fetchStackHostnames" {
-  program = [
-    local.fetchStackHostnamesScriptFilename,
-    local.kubeconfigFilename,
-    var.settings.cluster.namespace,
-    var.settings.cluster.identifier
-  ]
-
-  depends_on = [ null_resource.applyStackServices ]
+  primaryServiceIdentifier    = "${var.settings.cluster.identifier}-primary"
+  primaryServiceIp            = compact([ for node in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : (contains(node.tags, local.primaryServiceIdentifier) ? node.ipv4 : null)])
+  replicasServiceIdentifier   = "${var.settings.cluster.identifier}-replicas"
+  replicasServiceIp           = compact([ for node in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : (contains(node.tags, local.replicasServiceIdentifier) ? node.ipv4 : null)])
+  monitoringServiceIdentifier = "${var.settings.cluster.identifier}-monitoring"
+  monitoringServiceIp         = compact([ for node in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : (contains(node.tags, local.monitoringServiceIdentifier) ? node.ipv4 : null)])
 }
 
 # Definition of the default DNS domain.
@@ -26,39 +20,39 @@ resource "linode_domain" "default" {
 # Definition of the default DNS entry for the PostgreSQL primary instance.
 resource "linode_domain_record" "primary" {
   domain_id   = linode_domain.default.id
-  name        = "${var.settings.cluster.identifier}-primary.${var.settings.general.domain}"
-  record_type = "CNAME"
-  target      = data.external.fetchStackHostnames.result.primary
+  name        = "${local.primaryServiceIdentifier}.${var.settings.general.domain}"
+  record_type = "A"
+  target      = local.primaryServiceIp[0]
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
-    data.external.fetchStackHostnames
+    data.linode_nodebalancers.clusterNodeBalancers
   ]
 }
 
 # Definition of the default DNS entry for the PostgreSQL replica instances.
 resource "linode_domain_record" "replicas" {
   domain_id   = linode_domain.default.id
-  name        = "${var.settings.cluster.identifier}-replicas.${var.settings.general.domain}"
-  record_type = "CNAME"
-  target      = data.external.fetchStackHostnames.result.replicas
+  name        = "${local.replicasServiceIdentifier}.${var.settings.general.domain}"
+  record_type = "A"
+  target      = local.replicasServiceIp[0]
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
-    data.external.fetchStackHostnames
+    data.linode_nodebalancers.clusterNodeBalancers
   ]
 }
 
 # Definition of the default DNS entry for the PostgreSQL monitoring server instance.
 resource "linode_domain_record" "monitoringServer" {
   domain_id   = linode_domain.default.id
-  name        = "${var.settings.cluster.identifier}-monitoring.${var.settings.general.domain}"
-  record_type = "CNAME"
-  target      = data.external.fetchStackHostnames.result.monitoring
+  name        = "${local.monitoringServiceIdentifier}.${var.settings.general.domain}"
+  record_type = "A"
+  target      = local.monitoringServiceIp[0]
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
-    data.external.fetchStackHostnames
+    data.linode_nodebalancers.clusterNodeBalancers
   ]
 }
 
@@ -69,7 +63,10 @@ resource "linode_domain_record" "pgadmin" {
   record_type = "A"
   target      = linode_instance.pgadmin.ip_address
   ttl_sec     = 30
-  depends_on  = [ linode_instance.pgadmin ]
+  depends_on  = [
+    linode_domain.default,
+    linode_instance.pgadmin
+  ]
 }
 
 # Definition of the default DNS entry for the Grafana instance.
@@ -79,5 +76,8 @@ resource "linode_domain_record" "grafana" {
   record_type = "A"
   target      = linode_instance.grafana.ip_address
   ttl_sec     = 30
-  depends_on  = [ linode_instance.grafana ]
+  depends_on  = [
+    linode_domain.default,
+    linode_instance.grafana
+  ]
 }
