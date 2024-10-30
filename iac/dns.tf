@@ -1,11 +1,11 @@
 # Required variables.
 locals {
   primaryServiceIdentifier    = "${var.settings.cluster.identifier}-primary"
-  primaryServiceIp            = compact([ for node in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : (contains(node.tags, local.primaryServiceIdentifier) ? node.ipv4 : null)])
+  primaryServiceIp            = join("", compact([ for node in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : (contains(node.tags, local.primaryServiceIdentifier) ? node.ipv4 : null)]))
   replicasServiceIdentifier   = "${var.settings.cluster.identifier}-replicas"
-  replicasServiceIp           = compact([ for node in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : (contains(node.tags, local.replicasServiceIdentifier) ? node.ipv4 : null)])
+  replicasServiceIp           = join("", compact([ for node in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : (contains(node.tags, local.replicasServiceIdentifier) ? node.ipv4 : null)]))
   monitoringServiceIdentifier = "${var.settings.cluster.identifier}-monitoring"
-  monitoringServiceIp         = compact([ for node in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : (contains(node.tags, local.monitoringServiceIdentifier) ? node.ipv4 : null)])
+  monitoringServiceIp         = join("", compact([ for node in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : (contains(node.tags, local.monitoringServiceIdentifier) ? node.ipv4 : null)]))
 }
 
 # Definition of the default DNS domain.
@@ -22,7 +22,7 @@ resource "linode_domain_record" "primary" {
   domain_id   = linode_domain.default.id
   name        = "${local.primaryServiceIdentifier}.${var.settings.general.domain}"
   record_type = "A"
-  target      = local.primaryServiceIp[0]
+  target      = local.primaryServiceIp
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
@@ -36,7 +36,7 @@ resource "linode_domain_record" "replicas" {
   domain_id   = linode_domain.default.id
   name        = "${local.replicasServiceIdentifier}.${var.settings.general.domain}"
   record_type = "A"
-  target      = local.replicasServiceIp[0]
+  target      = local.replicasServiceIp
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
@@ -51,7 +51,7 @@ resource "linode_domain_record" "monitoring" {
   domain_id   = linode_domain.default.id
   name        = "${local.monitoringServiceIdentifier}.${var.settings.general.domain}"
   record_type = "A"
-  target      = local.monitoringServiceIp[0]
+  target      = local.monitoringServiceIp
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
