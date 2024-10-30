@@ -18,6 +18,12 @@ data "linode_instances" "clusterNodes" {
     name   = "id"
     values = local.nodesToBeProtected
   }
+
+  depends_on = [
+    linode_lke_cluster.default,
+    linode_instance.pgadmin,
+    linode_instance.grafana
+  ]
 }
 
 # Fetches the cluster node balancers.
