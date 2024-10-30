@@ -26,7 +26,8 @@ resource "linode_domain_record" "primary" {
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
-    data.linode_nodebalancers.clusterNodeBalancers
+    null_resource.applyStackServices,
+    null_resource.applyStackLabelsAndTags
   ]
 }
 
@@ -39,12 +40,14 @@ resource "linode_domain_record" "replicas" {
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
-    data.linode_nodebalancers.clusterNodeBalancers
+    null_resource.applyStackServices,
+    null_resource.applyStackLabelsAndTags
   ]
 }
 
-# Definition of the default DNS entry for the PostgreSQL monitoring server instance.
-resource "linode_domain_record" "monitoringServer" {
+# Definition of the default DNS entry for t
+# he PostgreSQL monitoring server instance.
+resource "linode_domain_record" "monitoring" {
   domain_id   = linode_domain.default.id
   name        = "${local.monitoringServiceIdentifier}.${var.settings.general.domain}"
   record_type = "A"
@@ -52,7 +55,8 @@ resource "linode_domain_record" "monitoringServer" {
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
-    data.linode_nodebalancers.clusterNodeBalancers
+    null_resource.applyStackServices,
+    null_resource.applyStackLabelsAndTags
   ]
 }
 

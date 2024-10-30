@@ -18,12 +18,6 @@ data "linode_instances" "clusterNodes" {
     name   = "id"
     values = local.nodesToBeProtected
   }
-
-  depends_on = [
-    linode_lke_cluster.default,
-    linode_instance.grafana,
-    linode_instance.pgadmin
-  ]
 }
 
 # Fetches the cluster node balancers.
@@ -123,7 +117,11 @@ resource "linode_firewall" "default" {
 
   depends_on = [
     data.http.myIp,
-    data.linode_instances.clusterNodes,
-    data.linode_nodebalancers.clusterNodeBalancers
+    linode_lke_cluster.default,
+    null_resource.applyStackServices,
+    null_resource.applyStackDeployment,
+    null_resource.applyStackLabelsAndTags,
+    linode_instance.pgadmin,
+    linode_instance.grafana
   ]
 }
