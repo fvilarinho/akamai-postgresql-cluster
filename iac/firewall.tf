@@ -37,7 +37,10 @@ data "linode_nodebalancers" "clusterNodeBalancers" {
     ]
   }
 
-  depends_on = [ null_resource.applyStackLabelsAndTags ]
+  depends_on = [
+    linode_lke_cluster.default,
+    null_resource.applyStackLabelsAndTags
+  ]
 }
 
 # Definition of the firewall rules.
@@ -123,11 +126,7 @@ resource "linode_firewall" "default" {
 
   depends_on = [
     data.http.myIp,
-    linode_lke_cluster.default,
-    null_resource.applyStackServices,
-    null_resource.applyStackDeployment,
-    null_resource.applyStackLabelsAndTags,
-    linode_instance.pgadmin,
-    linode_instance.grafana
+    data.linode_instances.clusterNodes,
+    data.linode_nodebalancers.clusterNodeBalancers
   ]
 }

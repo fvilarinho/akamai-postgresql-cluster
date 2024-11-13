@@ -26,6 +26,7 @@ resource "linode_domain_record" "primary" {
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
+    linode_lke_cluster.default,
     null_resource.applyStackServices,
     null_resource.applyStackLabelsAndTags
   ]
@@ -40,6 +41,7 @@ resource "linode_domain_record" "replicas" {
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
+    linode_lke_cluster.default,
     null_resource.applyStackServices,
     null_resource.applyStackLabelsAndTags
   ]
@@ -55,6 +57,7 @@ resource "linode_domain_record" "monitoring" {
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
+    linode_lke_cluster.default,
     null_resource.applyStackServices,
     null_resource.applyStackLabelsAndTags
   ]
