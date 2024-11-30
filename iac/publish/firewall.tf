@@ -38,7 +38,7 @@ data "linode_nodebalancers" "clusterNodeBalancers" {
 # Definition of the firewall rules.
 resource "linode_firewall" "default" {
   label           = "${var.settings.cluster.identifier}-firewall"
-  tags            = var.settings.cluster.tags
+  tags            = var.settings.general.tags
   inbound_policy  = "DROP"
   outbound_policy = "ACCEPT"
 

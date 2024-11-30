@@ -219,7 +219,7 @@ resource "null_resource" "applyStackLabelsAndTags" {
   triggers = {
     hash       = "${filemd5(local.applyStackLabelsAndTagsScriptFilename)}|${filemd5(local.applyStackServicesScriptFilename)}|${filemd5(local.stackServicesManifestFilename)}|${filemd5(local.applyStackDeploymentScriptFilename)}|${filemd5(local.stackDeploymentManifestFilename)}"
     namespace  = var.settings.cluster.namespace
-    tags       = join(" ", var.settings.cluster.tags)
+    tags       = join(" ", concat(var.settings.general.tags, var.settings.cluster.tags))
     nodesCount = var.settings.cluster.nodes.count
   }
 
@@ -227,7 +227,7 @@ resource "null_resource" "applyStackLabelsAndTags" {
     environment = {
       KUBECONFIG = local.kubeconfigFilename
       NAMESPACE  = var.settings.cluster.namespace
-      TAGS       = join(" ", var.settings.cluster.tags)
+      TAGS       = join(" ", concat(var.settings.general.tags, var.settings.cluster.tags))
     }
 
     quiet   = true

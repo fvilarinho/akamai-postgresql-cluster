@@ -11,7 +11,7 @@ resource "linode_domain" "default" {
   type      = "master"
   soa_email = var.settings.general.email
   ttl_sec   = 30
-  tags      = var.settings.cluster.tags
+  tags      = var.settings.general.tags
 }
 
 # Definition of the default DNS entry for the PostgreSQL primary instance.

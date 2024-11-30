@@ -5,13 +5,14 @@ variable "settings" {
       email  = "<your-email>"
       domain = "<your-domain>"
       token  = "<token>"
+      tags   = [ "demo", "postgresql" ]
     }
 
     # Definition of the Grafana instance.
     grafana = {
       namespace  = "akamai-dbaas"
       identifier = "grafana"
-      tags       = [ "demo" ]
+      tags       = [ "monitoring" ]
       type       = "g6-standard-2"
       region     = "<region>"
       user       = "<user>"
@@ -22,7 +23,7 @@ variable "settings" {
     pgadmin = {
       namespace  = "akamai-dbaas"
       identifier = "pgadmin"
-      tags       = [ "demo" ]
+      tags       = [ "admin" ]
       type       = "g6-standard-2"
       region     = "<region>"
       user       = "<user>"
@@ -33,7 +34,7 @@ variable "settings" {
     cluster = {
       namespace  = "akamai-dbaas"
       identifier = "postgresql"
-      tags       = [ "demo" ]
+      tags       = [ "cluster" ]
 
       # Database attributes.
       database = {
