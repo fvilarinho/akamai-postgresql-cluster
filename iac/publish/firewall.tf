@@ -18,7 +18,7 @@ data "http" "myIp" {
 # Fetches the nodes to be protected.
 data "linode_instances" "nodesToBeProtected" {
   filter {
-    name = "id"
+    name   = "id"
     values = local.nodesToBeProtected
   }
 }
