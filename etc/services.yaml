@@ -54,13 +54,13 @@ kind: Service
 
 metadata:
   namespace: ${NAMESPACE}
-  name: ${IDENTIFIER}-monitoring
+  name: ${IDENTIFIER}-monitoring-server
 
 spec:
   type: LoadBalancer
 
   selector:
-    app: ${IDENTIFIER}-monitoring
+    app: ${IDENTIFIER}-monitoring-server
 
   ports:
     - port: 9090

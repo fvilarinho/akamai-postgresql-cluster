@@ -20,7 +20,7 @@ locals {
 resource "null_resource" "applyStackOperator" {
   # Execute when detected changes.
   triggers = {
-    when = filemd5(local.applyStackOperatorScriptFilename)
+    hash = filemd5(local.applyStackOperatorScriptFilename)
   }
 
   provisioner "local-exec" {
@@ -40,7 +40,8 @@ resource "null_resource" "applyStackOperator" {
 resource "null_resource" "applyStackNamespace" {
   # Execute when detected changes.
   triggers = {
-    when = filemd5(local.applyStackNamespaceScriptFilename)
+    hash      = filemd5(local.applyStackNamespaceScriptFilename)
+    namespace = var.settings.cluster.namespace
   }
 
   provisioner "local-exec" {
@@ -61,7 +62,14 @@ resource "null_resource" "applyStackNamespace" {
 resource "null_resource" "applyStackSecrets" {
   # Execute when detected changes.
   triggers = {
-    when = "${filemd5(local.applyStackSecretsScriptFilename)}|${filemd5(local.stackSecretsManifestFilename)}"
+    hash                    = "${filemd5(local.applyStackSecretsScriptFilename)}|${filemd5(local.stackSecretsManifestFilename)}"
+    namespace               = var.settings.cluster.namespace
+    identifier              = var.settings.cluster.identifier
+    databaseName            = var.settings.cluster.database.name
+    databaseUser            = var.settings.cluster.database.user
+    databasePassword        = var.settings.cluster.database.password
+    databaseBackupAccessKey = linode_object_storage_key.backup.access_key
+    databaseBackupSecretKey = linode_object_storage_key.backup.secret_key
   }
 
   provisioner "local-exec" {
@@ -82,14 +90,17 @@ resource "null_resource" "applyStackSecrets" {
     command = local.applyStackSecretsScriptFilename
   }
 
-  depends_on = [ local_sensitive_file.kubeconfig ]
+  depends_on = [ null_resource.applyStackNamespace ]
 }
 
 # Applies the stack config maps.
 resource "null_resource" "applyStackConfigMaps" {
   # Execute when detected changes.
   triggers = {
-    when = "${filemd5(local.applyStackConfigMapsScriptFilename)}|${filemd5(local.stackConfigMapsManifestFilename)}"
+    hash       = "${filemd5(local.applyStackConfigMapsScriptFilename)}|${filemd5(local.stackConfigMapsManifestFilename)}"
+    namespace  = var.settings.cluster.namespace
+    identifier = var.settings.cluster.identifier
+
   }
 
   provisioner "local-exec" {
@@ -105,37 +116,23 @@ resource "null_resource" "applyStackConfigMaps" {
     command = local.applyStackConfigMapsScriptFilename
   }
 
-  depends_on = [ local_sensitive_file.kubeconfig ]
-}
-
-# Applies the stack services.
-resource "null_resource" "applyStackServices" {
-  # Execute when detected changes.
-  triggers = {
-    when = "${filemd5(local.applyStackServicesScriptFilename)}|${filemd5(local.stackServicesManifestFilename)}"
-  }
-
-  provisioner "local-exec" {
-    # Required variables.
-    environment = {
-      KUBECONFIG        = local.kubeconfigFilename
-      MANIFEST_FILENAME = local.stackServicesManifestFilename
-      NAMESPACE         = var.settings.cluster.namespace
-      IDENTIFIER        = var.settings.cluster.identifier
-    }
-
-    quiet   = true
-    command = local.applyStackServicesScriptFilename
-  }
-
-  depends_on = [ local_sensitive_file.kubeconfig ]
+  depends_on = [ null_resource.applyStackNamespace ]
 }
 
 # Applies the stack deployment.
 resource "null_resource" "applyStackDeployment" {
   # Execute when detected changes.
   triggers = {
-    when = "${filemd5(local.applyStackDeploymentScriptFilename)}|${filemd5(local.stackDeploymentManifestFilename)}"
+    hash                    = "${filemd5(local.applyStackDeploymentScriptFilename)}|${filemd5(local.stackDeploymentManifestFilename)}"
+    namespace               = var.settings.cluster.namespace
+    identifier              = var.settings.cluster.identifier
+    databaseVersion         = var.settings.cluster.database.version
+    databaseName            = var.settings.cluster.database.name
+    databaseUser            = var.settings.cluster.database.user
+    databaseBackupUrl       = linode_object_storage_bucket.backup.hostname
+    databaseBackupRetention = var.settings.cluster.database.backup.retention
+    nodesCount              = var.settings.cluster.nodes.count
+    storageSize             = var.settings.cluster.storage.size
   }
 
   provisioner "local-exec" {
@@ -159,19 +156,44 @@ resource "null_resource" "applyStackDeployment" {
   }
 
   depends_on = [
-    null_resource.applyStackOperator,
     null_resource.applyStackNamespace,
-    null_resource.applyStackConfigMaps,
-    null_resource.applyStackSecrets,
-    null_resource.applyStackServices
+    null_resource.applyStackOperator
   ]
+}
+
+# Applies the stack services.
+resource "null_resource" "applyStackServices" {
+  # Execute when detected changes.
+  triggers = {
+    hash       = "${filemd5(local.applyStackServicesScriptFilename)}|${filemd5(local.stackServicesManifestFilename)}"
+    namespace  = var.settings.cluster.namespace
+    identifier = var.settings.cluster.identifier
+  }
+
+  provisioner "local-exec" {
+    # Required variables.
+    environment = {
+      KUBECONFIG        = local.kubeconfigFilename
+      MANIFEST_FILENAME = local.stackServicesManifestFilename
+      NAMESPACE         = var.settings.cluster.namespace
+      IDENTIFIER        = var.settings.cluster.identifier
+    }
+
+    quiet   = true
+    command = local.applyStackServicesScriptFilename
+  }
+
+  depends_on = [ null_resource.applyStackNamespace ]
 }
 
 # Applies the stack scheduled backup.
 resource "null_resource" "applyStackScheduledBackup" {
   # Execute when detected changes.
   triggers = {
-    when = "${filemd5(local.applyStackScheduledBackupScriptFilename)}|${filemd5(local.stackScheduledBackupManifestFilename)}"
+    hash                   = "${filemd5(local.applyStackScheduledBackupScriptFilename)}|${filemd5(local.stackScheduledBackupManifestFilename)}"
+    namespace              = var.settings.cluster.namespace
+    identifier             = var.settings.cluster.identifier
+    databaseBackupSchedule = var.settings.cluster.database.backup.schedule
   }
 
   provisioner "local-exec" {
@@ -195,7 +217,10 @@ resource "null_resource" "applyStackScheduledBackup" {
 resource "null_resource" "applyStackLabelsAndTags" {
   # Execute when detected changes.
   triggers = {
-    when = "${filemd5(local.applyStackLabelsAndTagsScriptFilename)}|${filemd5(local.applyStackServicesScriptFilename)}|${filemd5(local.stackServicesManifestFilename)}|${filemd5(local.applyStackDeploymentScriptFilename)}|${filemd5(local.stackDeploymentManifestFilename)}"
+    hash       = "${filemd5(local.applyStackLabelsAndTagsScriptFilename)}|${filemd5(local.applyStackServicesScriptFilename)}|${filemd5(local.stackServicesManifestFilename)}|${filemd5(local.applyStackDeploymentScriptFilename)}|${filemd5(local.stackDeploymentManifestFilename)}"
+    namespace  = var.settings.cluster.namespace
+    tags       = join(" ", var.settings.cluster.tags)
+    nodesCount = var.settings.cluster.nodes.count
   }
 
   provisioner "local-exec" {
@@ -209,5 +234,8 @@ resource "null_resource" "applyStackLabelsAndTags" {
     command = local.applyStackLabelsAndTagsScriptFilename
   }
 
-  depends_on = [ null_resource.applyStackDeployment ]
+  depends_on = [
+    null_resource.applyStackServices,
+    null_resource.applyStackDeployment
+  ]
 }

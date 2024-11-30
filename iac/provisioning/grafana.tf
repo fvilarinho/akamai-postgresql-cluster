@@ -17,7 +17,7 @@ EOT
 # Definition of the Grafana instance.
 resource "linode_instance" "grafana" {
   label           = var.settings.grafana.identifier
-  tags            = concat(var.settings.grafana.tags, [ var.settings.grafana.namespace ])
+  tags            = var.settings.grafana.tags
   region          = var.settings.grafana.region
   type            = var.settings.grafana.type
   image           = "linode/debian11"

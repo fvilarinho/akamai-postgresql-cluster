@@ -1,10 +1,13 @@
 # Required variables.
 locals {
-  nodesToBeProtected         = concat([ for node in linode_lke_cluster.default.pool[0].nodes : node.instance_id ], [ linode_instance.pgadmin.id, linode_instance.grafana.id ])
-  nodeBalancersToBeProtected = [ for nodeBalancer in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : nodeBalancer.id ]
-  allowedPublicIps           = concat([ for node in data.linode_instances.clusterNodes.instances : "${node.ip_address}/32" ], [ "${jsondecode(data.http.myIp.response_body).ip}/32" ])
-  allowedPrivateIps          = [ for node in data.linode_instances.clusterNodes.instances : "${node.private_ip_address}/32" ]
-  allowedIpv4                = concat(var.settings.cluster.allowedIps.ipv4, concat(local.allowedPublicIps, local.allowedPrivateIps))
+  primaryServiceIdentifier    = "${var.settings.cluster.identifier}-primary"
+  replicasServiceIdentifier   = "${var.settings.cluster.identifier}-replicas"
+  monitoringServiceIdentifier = "${var.settings.cluster.identifier}-monitoring-server"
+  nodesToBeProtected          = concat(var.clusterNodes, [ var.grafanaNode.id, var.pgadminNode.id ])
+  nodeBalancersToBeProtected  = [ for nodeBalancer in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : nodeBalancer.id ]
+  allowedPublicIps            = concat([ for node in data.linode_instances.nodesToBeProtected.instances : "${node.ip_address}/32" ], [ "${jsondecode(data.http.myIp.response_body).ip}/32" ])
+  allowedPrivateIps           = [ for node in data.linode_instances.nodesToBeProtected.instances : "${node.private_ip_address}/32" ]
+  allowedIpv4                 = concat(var.settings.cluster.allowedIps.ipv4, concat(local.allowedPublicIps, local.allowedPrivateIps))
 }
 
 # Fetches the local IP.
@@ -12,18 +15,12 @@ data "http" "myIp" {
   url = "https://ipinfo.io"
 }
 
-# Fetches the cluster nodes.
-data "linode_instances" "clusterNodes" {
+# Fetches the nodes to be protected.
+data "linode_instances" "nodesToBeProtected" {
   filter {
-    name   = "id"
+    name = "id"
     values = local.nodesToBeProtected
   }
-
-  depends_on = [
-    linode_lke_cluster.default,
-    linode_instance.pgadmin,
-    linode_instance.grafana
-  ]
 }
 
 # Fetches the cluster node balancers.
@@ -36,14 +33,12 @@ data "linode_nodebalancers" "clusterNodeBalancers" {
       local.monitoringServiceIdentifier
     ]
   }
-
-  depends_on = [ null_resource.applyStackLabelsAndTags ]
 }
 
 # Definition of the firewall rules.
 resource "linode_firewall" "default" {
   label           = "${var.settings.cluster.identifier}-firewall"
-  tags            = concat(var.settings.cluster.tags, [ var.settings.cluster.namespace ])
+  tags            = var.settings.cluster.tags
   inbound_policy  = "DROP"
   outbound_policy = "ACCEPT"
 
@@ -123,11 +118,7 @@ resource "linode_firewall" "default" {
 
   depends_on = [
     data.http.myIp,
-    linode_lke_cluster.default,
-    null_resource.applyStackServices,
-    null_resource.applyStackDeployment,
-    null_resource.applyStackLabelsAndTags,
-    linode_instance.pgadmin,
-    linode_instance.grafana
+    data.linode_instances.nodesToBeProtected,
+    data.linode_nodebalancers.clusterNodeBalancers
   ]
 }

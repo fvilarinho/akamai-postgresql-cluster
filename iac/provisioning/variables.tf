@@ -11,7 +11,7 @@ variable "settings" {
     grafana = {
       namespace  = "akamai-dbaas"
       identifier = "grafana"
-      tags       = [ "demo" ]
+      tags       = [ "demo", "postgresql" ]
       type       = "g6-standard-2"
       region     = "<region>"
       user       = "<user>"
@@ -22,7 +22,7 @@ variable "settings" {
     pgadmin = {
       namespace  = "akamai-dbaas"
       identifier = "pgadmin"
-      tags       = [ "demo" ]
+      tags       = [ "demo", "postgresql" ]
       type       = "g6-standard-2"
       region     = "<region>"
       user       = "<user>"
@@ -33,7 +33,7 @@ variable "settings" {
     cluster = {
       namespace  = "akamai-dbaas"
       identifier = "postgresql"
-      tags       = [ "demo" ]
+      tags       = [ "demo", "postgresql" ]
 
       # Database attributes.
       database = {

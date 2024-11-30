@@ -7,7 +7,7 @@ locals {
 resource "linode_lke_cluster" "default" {
   k8s_version = "1.31"
   label       = var.settings.cluster.identifier
-  tags        = concat(var.settings.cluster.tags, [ var.settings.cluster.namespace ])
+  tags        = var.settings.cluster.tags
   region      = var.settings.cluster.nodes.region
 
   pool {
@@ -18,17 +18,7 @@ resource "linode_lke_cluster" "default" {
 
   control_plane {
     high_availability = true
-
-    acl {
-      enabled = true
-
-      addresses {
-        ipv4 = [ "${jsondecode(data.http.myIp.response_body).ip}/32" ]
-      }
-    }
   }
-
-  depends_on = [ data.http.myIp ]
 }
 
 # Saves the K8S cluster configuration file used to connect into it.

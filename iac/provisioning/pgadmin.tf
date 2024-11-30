@@ -17,7 +17,7 @@ EOT
 # Definition of the PostgreSQL admin instance.
 resource "linode_instance" "pgadmin" {
   label           = var.settings.pgadmin.identifier
-  tags            = concat(var.settings.pgadmin.tags, [ var.settings.pgadmin.namespace ])
+  tags            = var.settings.pgadmin.tags
   region          = var.settings.pgadmin.region
   type            = var.settings.pgadmin.type
   image           = "linode/debian11"

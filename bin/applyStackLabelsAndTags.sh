@@ -39,11 +39,8 @@ function applyStackLabelsAndTags() {
     PODS=$($KUBECTL_CMD get pods -o wide -n "$NAMESPACE" | grep "$NODE" | awk -F' ' '{print $1}')
     NODE_IP=$($KUBECTL_CMD get node -o wide | grep "$NODE" | awk -F' ' '{print $7}')
     NODE_ID=$($LINODE_CLI_CMD linodes list --text | grep "$NODE_IP" | awk -F' ' '{print $1}')
-    VOLUME_ID=$($LINODE_CLI_CMD volumes list --text | grep "$NODE_ID" | awk -F' ' '{print $1}')
-    VOLUME=$($LINODE_CLI_CMD volumes list --text | grep "$NODE_ID" | awk -F' ' '{print $2}')
 
     $LINODE_CLI_CMD linodes update --label "$NODE" "$NODE_ID" > /dev/null 2>&1
-    $LINODE_CLI_CMD volumes update --label "$VOLUME" "$VOLUME_ID" > /dev/null 2>&1
 
     ADDITIONAL_TAGS=
 
@@ -52,10 +49,21 @@ function applyStackLabelsAndTags() {
       ADDITIONAL_TAGS="$ADDITIONAL_TAGS --tags \"$POD\""
     done
 
-    ADDITIONAL_TAGS="$ADDITIONAL_TAGS --tags \"$NAMESPACE\""
-
     eval "$LINODE_CLI_CMD linodes update $TAGS_PARAMS $ADDITIONAL_TAGS $NODE_ID > /dev/null 2>&1"
-    eval "$LINODE_CLI_CMD volumes update $TAGS_PARAMS $ADDITIONAL_TAGS $VOLUME_ID > /dev/null 2>&1"
+
+    for POD in $PODS
+    do
+      VOLUME_NAME=$($KUBECTL_CMD get pvc -n "$NAMESPACE" | grep "$POD" | awk -F' ' '{print $3}')
+
+      if [ -n "$VOLUME_NAME" ]; then
+        VOLUME_NAME=$(echo "$VOLUME_NAME" | sed 's/-//g')
+        VOLUME_ID=$($LINODE_CLI_CMD volumes list --text | grep "$VOLUME_NAME" | awk -F' ' '{print $1}')
+
+        ADDITIONAL_TAGS="--tags \"$POD\""
+
+        eval "$LINODE_CLI_CMD volumes update $TAGS_PARAMS $ADDITIONAL_TAGS $VOLUME_ID > /dev/null 2>&1"
+      fi
+    done
   done
 
   echo "Applying labels and tags to node balancers..."
@@ -67,7 +75,7 @@ function applyStackLabelsAndTags() {
     NODE_BALANCER_NAME=$($KUBECTL_CMD get svc -n "$NAMESPACE" | grep "$NODE_BALANCER" | awk -F' ' '{print $1}')
     NODE_BALANCER_ID=$($LINODE_CLI_CMD nodebalancers list --text | grep "$NODE_BALANCER" | awk -F' ' '{print $1}')
 
-    ADDITIONAL_TAGS="--tags \"$NODE_BALANCER_NAME\" --tags \"$NAMESPACE\""
+    ADDITIONAL_TAGS="--tags \"$NODE_BALANCER_NAME\""
 
     eval "$LINODE_CLI_CMD nodebalancers update $TAGS_PARAMS $ADDITIONAL_TAGS $NODE_BALANCER_ID > /dev/null 2>&1"
   done

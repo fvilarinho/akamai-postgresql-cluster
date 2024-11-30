@@ -96,21 +96,21 @@ kind: Deployment
 
 metadata:
   namespace: ${NAMESPACE}
-  name: ${IDENTIFIER}-monitoring
+  name: ${IDENTIFIER}-monitoring-server
 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ${IDENTIFIER}-monitoring
+      app: ${IDENTIFIER}-monitoring-server
 
   template:
     metadata:
       labels:
-        app: ${IDENTIFIER}-monitoring
+        app: ${IDENTIFIER}-monitoring-server
     spec:
       containers:
-        - name: ${IDENTIFIER}-monitoring
+        - name: ${IDENTIFIER}-monitoring-server
           image: prom/prometheus:latest
           args:
             - "--config.file=/etc/prometheus/prometheus.yml"

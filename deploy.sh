@@ -8,14 +8,26 @@ function checkDependencies() {
     exit 1
   fi
 
+  if [ -z "$HELM_CMD" ]; then
+    echo "helm is not installed! Please install it first to continue!"
+
+    exit 1
+  fi
+
   if [ -z "$KUBECTL_CMD" ]; then
     echo "kubectl is not installed! Please install it first to continue!"
 
     exit 1
   fi
 
-  if [ -z "$JQ_CMD" ]; then
-    echo "jq is not installed! Please install it first to continue!"
+  if [ -z "$LINODE_CLI_CMD" ]; then
+    echo "linode-cli is not installed! Please install it first to continue!"
+
+    exit 1
+  fi
+
+  if [ -z "$CERTBOT_CMD" ]; then
+    echo "certbot is not installed! Please install it first to continue!"
 
     exit 1
   fi

@@ -11,32 +11,42 @@ function checkDependencies() {
 
 # Applies the stack operator replacing the placeholders with the correspondent environment variable value.
 function applyStackOperator() {
-  $KUBECTL_CMD apply --server-side -f \
-               https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.23/releases/cnpg-1.23.5.yaml
-
   NAMESPACE=cnpg-system
 
+  $HELM_CMD upgrade --install cnpg \
+            --namespace "$NAMESPACE" \
+            --create-namespace \
+            cnpg/cloudnative-pg
+}
+
+# Waits until the deployment completes.
+function waitUntilCompletes() {
   while true; do
     sleep 10
 
-    OPERATOR_IS_RUNNING=$($KUBECTL_CMD get pods -n "$NAMESPACE" | grep Running)
+    IS_READY=$($KUBECTL_CMD get crds -A | grep "clusters.postgresql.cnpg.io")
 
-    if [ -n "$OPERATOR_IS_RUNNING" ]; then
-      break
+    if [ -n "$IS_READY" ]; then
+      IS_READY=$($KUBECTL_CMD get pods -A | grep cnpg-cloudnative-pg | grep Running)
+
+      if [ -n "$IS_READY" ]; then
+        break
+      fi
     fi
 
-    echo "Waiting until the stack operator gets ready..."
+    echo "Waiting until the operator gets ready.."
+
+    sleep 10
   done
 
-  sleep 10
-
-  echo "The stack operator is now ready!"
+  echo "The operator is now ready!"
 }
 
 # Main function.
 function main() {
   checkDependencies
   applyStackOperator
+  waitUntilCompletes
 }
 
 main

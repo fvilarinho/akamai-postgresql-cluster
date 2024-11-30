@@ -10,29 +10,17 @@ terraform {
     skip_region_validation      = true
     skip_metadata_api_check     = true
   }
-
-  # Required providers definition.
-  required_providers {
-    linode = {
-      source = "linode/linode"
-    }
-
-    null = {
-      source = "hashicorp/null"
-    }
-
-    random = {
-      source = "hashicorp/random"
-    }
-  }
 }
 
-# Akamai Cloud Computing provider definition.
-provider "linode" {
-  token = var.settings.general.token
+module "provisioning" {
+  source   = "./provisioning"
+  settings = var.settings
 }
 
-locals {
-  sshPrivateKeyFilename = abspath(pathexpand("~/.ssh/id_rsa"))
-  sshPublicKeyFilename = abspath(pathexpand("~/.ssh/id_rsa.pub"))
+module "publish" {
+  source       = "./publish"
+  settings     = var.settings
+  clusterNodes = module.provisioning.clusterNodes
+  grafanaNode  = module.provisioning.grafanaNode
+  pgadminNode  = module.provisioning.pgadminNode
 }

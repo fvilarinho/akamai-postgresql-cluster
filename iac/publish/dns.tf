@@ -1,11 +1,8 @@
 # Required variables.
 locals {
-  primaryServiceIdentifier    = "${var.settings.cluster.identifier}-primary"
-  primaryServiceIp            = join("", compact([ for node in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : (contains(node.tags, local.primaryServiceIdentifier) ? node.ipv4 : null)]))
-  replicasServiceIdentifier   = "${var.settings.cluster.identifier}-replicas"
-  replicasServiceIp           = join("", compact([ for node in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : (contains(node.tags, local.replicasServiceIdentifier) ? node.ipv4 : null)]))
-  monitoringServiceIdentifier = "${var.settings.cluster.identifier}-monitoring"
-  monitoringServiceIp         = join("", compact([ for node in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : (contains(node.tags, local.monitoringServiceIdentifier) ? node.ipv4 : null)]))
+  primaryServiceIp    = join("", compact([ for nodeBalancer in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : (contains(nodeBalancer.tags, local.primaryServiceIdentifier) ? nodeBalancer.ipv4 : null) ]))
+  replicasServiceIp   = join("", compact([ for nodeBalancer in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : (contains(nodeBalancer.tags, local.replicasServiceIdentifier) ? nodeBalancer.ipv4 : null)]))
+  monitoringServiceIp = join("", compact([ for nodeBalancer in data.linode_nodebalancers.clusterNodeBalancers.nodebalancers : (contains(nodeBalancer.tags, local.monitoringServiceIdentifier) ? nodeBalancer.ipv4 : null)]))
 }
 
 # Definition of the default DNS domain.
@@ -14,7 +11,7 @@ resource "linode_domain" "default" {
   type      = "master"
   soa_email = var.settings.general.email
   ttl_sec   = 30
-  tags      = concat(var.settings.cluster.tags, [ var.settings.cluster.namespace ])
+  tags      = var.settings.cluster.tags
 }
 
 # Definition of the default DNS entry for the PostgreSQL primary instance.
@@ -26,8 +23,7 @@ resource "linode_domain_record" "primary" {
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
-    null_resource.applyStackServices,
-    null_resource.applyStackLabelsAndTags
+    data.linode_nodebalancers.clusterNodeBalancers
   ]
 }
 
@@ -40,13 +36,11 @@ resource "linode_domain_record" "replicas" {
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
-    null_resource.applyStackServices,
-    null_resource.applyStackLabelsAndTags
+    data.linode_nodebalancers.clusterNodeBalancers
   ]
 }
 
-# Definition of the default DNS entry for t
-# he PostgreSQL monitoring server instance.
+# Definition of the default DNS entry for the PostgreSQL monitoring server instance.
 resource "linode_domain_record" "monitoring" {
   domain_id   = linode_domain.default.id
   name        = "${local.monitoringServiceIdentifier}.${var.settings.general.domain}"
@@ -55,8 +49,7 @@ resource "linode_domain_record" "monitoring" {
   ttl_sec     = 30
   depends_on  = [
     linode_domain.default,
-    null_resource.applyStackServices,
-    null_resource.applyStackLabelsAndTags
+    data.linode_nodebalancers.clusterNodeBalancers
   ]
 }
 
@@ -65,12 +58,9 @@ resource "linode_domain_record" "pgadmin" {
   domain_id   = linode_domain.default.id
   name        = "${var.settings.pgadmin.identifier}.${var.settings.general.domain}"
   record_type = "A"
-  target      = linode_instance.pgadmin.ip_address
+  target      = var.pgadminNode.ip_address
   ttl_sec     = 30
-  depends_on  = [
-    linode_domain.default,
-    linode_instance.pgadmin
-  ]
+  depends_on  = [ linode_domain.default ]
 }
 
 # Definition of the default DNS entry for the Grafana instance.
@@ -78,10 +68,7 @@ resource "linode_domain_record" "grafana" {
   domain_id   = linode_domain.default.id
   name        = "${var.settings.grafana.identifier}.${var.settings.general.domain}"
   record_type = "A"
-  target      = linode_instance.grafana.ip_address
+  target      = var.grafanaNode.ip_address
   ttl_sec     = 30
-  depends_on  = [
-    linode_domain.default,
-    linode_instance.grafana
-  ]
+  depends_on  = [ linode_domain.default ]
 }

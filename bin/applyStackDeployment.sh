@@ -8,6 +8,12 @@ function checkDependencies() {
     exit 1
   fi
 
+  if [ -z "$MANIFEST_FILENAME" ]; then
+    echo "The manifest file is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
+
   if [ -z "$NAMESPACE" ]; then
     echo "The stack namespace is not defined! Please define it first to continue!"
 
@@ -16,12 +22,6 @@ function checkDependencies() {
 
   if [ -z "$IDENTIFIER" ]; then
     echo "The stack identifier is not defined! Please define it first to continue!"
-
-    exit 1
-  fi
-
-  if [ -z "$MANIFEST_FILENAME" ]; then
-    echo "The manifest file is not defined! Please define it first to continue!"
 
     exit 1
   fi
@@ -101,10 +101,12 @@ function waitUntilCompletes() {
       break
     fi
 
-    echo "Waiting until the deployment completes..."
+    echo "Waiting until the deployment gets ready..."
+
+    sleep 10
   done
 
-  echo "Deployment completes!"
+  echo "Deployment now is ready!"
 }
 
 # Main function.

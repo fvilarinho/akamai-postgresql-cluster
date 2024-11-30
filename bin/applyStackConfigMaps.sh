@@ -8,6 +8,12 @@ function checkDependencies() {
     exit 1
   fi
 
+  if [ -z "$MANIFEST_FILENAME" ]; then
+    echo "The manifest file is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
+
   if [ -z "$NAMESPACE" ]; then
     echo "The stack namespace is not defined! Please define it first to continue!"
 
