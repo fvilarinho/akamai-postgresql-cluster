@@ -42,6 +42,7 @@ your project directory.
 
 Follow the documentation below to know more about Akamai:
 - [Akamai Techdocs](https://techdocs.akamai.com)
+- [CloudnativePG](https://cloudnative-pg.io/documentation/1.24)
 
 ### Important notes
 - **DON'T EXPOSE OR COMMIT ANY SENSITIVE DATA, SUCH AS CREDENTIALS, IN THE PROJECT.**
