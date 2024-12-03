@@ -33,15 +33,15 @@ variable "settings" {
 
         # Firewall attributes.
         allowedIps = {
-          ipv4 = ["0.0.0.0/0"]
+          ipv4 = [ "0.0.0.0/0" ]
           ipv6 = []
         }
 
         # Database attributes.
         database = {
-          version = 17.0
-          name    = "defaultdb"
-          user    = "<user>"
+          version  = 17.0
+          name     = "defaultdb"
+          user     = "<user>"
           password = "<password>"
 
           # Backup attributes.
