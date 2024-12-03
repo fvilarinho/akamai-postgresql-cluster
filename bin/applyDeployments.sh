@@ -100,7 +100,7 @@ function applyDeployments() {
 # Waits until the deployment completes.
 function waitUntilCompletes() {
   while true; do
-    sleep 10
+    sleep 15
 
     IS_READY=$($KUBECTL_CMD get cluster -n "$NAMESPACE" | grep "Cluster in healthy state")
 
@@ -110,7 +110,7 @@ function waitUntilCompletes() {
 
     echo "Waiting until the cluster gets ready..."
 
-    sleep 10
+    sleep 15
   done
 
   echo "Cluster is now ready!"

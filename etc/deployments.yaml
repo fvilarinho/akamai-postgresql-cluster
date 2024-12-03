@@ -54,6 +54,7 @@ spec:
   # Cron based format.
   schedule: "${DATABASE_BACKUP_SCHEDULE}"
   suspend: false
+  immediate: true
   backupOwnerReference: self
   cluster:
     name: server

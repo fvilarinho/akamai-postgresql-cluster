@@ -22,7 +22,7 @@ function applyOperator() {
 # Waits until the deployment completes.
 function waitUntilCompletes() {
   while true; do
-    sleep 10
+    sleep 15
 
     IS_READY=$($KUBECTL_CMD get crds -A | grep "clusters.postgresql.cnpg.io")
 
@@ -36,7 +36,7 @@ function waitUntilCompletes() {
 
     echo "Waiting until the operator gets ready.."
 
-    sleep 10
+    sleep 15
   done
 
   echo "The operator is now ready!"
