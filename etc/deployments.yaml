@@ -1,0 +1,59 @@
+# Definition of the cluster (initialization, replicas, backups and storage).
+# Powered by Cloud Native PG (https://cloudnative-pg.io).
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+
+metadata:
+  namespace: ${NAMESPACE}
+  name: server
+
+spec:
+  # PostgreSQL version.
+  imageName: ghcr.io/cloudnative-pg/postgresql:${DATABASE_VERSION}
+  imagePullPolicy: Always
+  primaryUpdateStrategy: unsupervised
+
+  # Number of instances in the cluster.
+  instances: ${NODES_COUNT}
+
+  # Initialization definition.
+  bootstrap:
+    initdb:
+      database: ${DATABASE_NAME}
+      owner: ${DATABASE_OWNER}
+      secret:
+        name: auth-secret
+
+  # Storage definition.
+  storage:
+    size: ${STORAGE_SIZE}Gi
+
+  # Backup definition.
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://${DATABASE_NAME}
+      endpointURL: ${DATABASE_BACKUP_URL}
+      s3Credentials:
+        accessKeyId:
+          name: backup-secret
+          key: accessKey
+        secretAccessKey:
+          name: backup-secret
+          key: secretKey
+    retentionPolicy: "${DATABASE_BACKUP_RETENTION}d"
+---
+# Definition of the backup scheduler for the cluster.
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+
+metadata:
+  namespace: ${NAMESPACE}
+  name: scheduled-backup
+
+spec:
+  # Cron based format.
+  schedule: "${DATABASE_BACKUP_SCHEDULE}"
+  suspend: false
+  backupOwnerReference: self
+  cluster:
+    name: server

@@ -9,14 +9,14 @@ function checkDependencies() {
   fi
 
   if [ -z "$NAMESPACE" ]; then
-    echo "The stack namespace is not defined! Please define it first to continue!"
+    echo "The namespace is not defined! Please define it first to continue!"
 
     exit 1
   fi
 }
 
-# Applies the stack namespace replacing the placeholders with the correspondent environment variable value.
-function applyStackNamespace() {
+# Applies cluster namespaces required.
+function applyNamespaces() {
   $KUBECTL_CMD create namespace "$NAMESPACE" \
                -o yaml \
                --dry-run=client | $KUBECTL_CMD apply -f -
@@ -25,7 +25,7 @@ function applyStackNamespace() {
 # Main function.
 function main() {
   checkDependencies
-  applyStackNamespace
+  applyNamespaces
 }
 
 main

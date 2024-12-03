@@ -5,6 +5,7 @@ This project has the intention to demonstrate how to deploy a PostgreSQL cluster
 
 ### Requirements
 - [terraform 1.5.x](https://terraform.io)
+- [helm 3.16.x](https://helm.sh)
 - [kubectl 1.31.x](https://kubernetes.io/docs/reference/kubectl/kubectl)
 - [linode-cli 5.52.x](https://www.linode.com/products/cli)
 - [certbot 2.11.x](https://certbot.eff.org)
@@ -21,15 +22,11 @@ environment:
 - **Cloud Firewall**: Please check the file `iac/firewall.tf` for more details.
 - **Node Balancers**: Please check the file `etc/services.yaml` for more details.
 - **Object Storage**: Please check the file `iac/object-storage.tf` for more details.
-- **Block Storage**: Please check the file `etc/deployment.yaml` for more details.
+- **Block Storage**: Please check the file `iac/deployments.yaml` for more details.
 - **LKE Cluster**: Please check the file `iac/lke.tf` for more details. 
-- **LKE Secrets and Config Maps**: Please check the files `etc/secrets.yaml` and `etc/configMaps.yaml` for more details.
-- **LKE Cluster Scheduled Backup**: Please check the file `etc/scheduledBackup.yaml` for more details.
-- **[Prometheus](https://prometheus.io)**: Please check the file `etc/deployment.yaml` for more details.
-- **[PostgreSQL Server](https://cloudnative-pg.io)**: Please check the file `etc/deployment.yaml` for more details.
+- **[PostgreSQL Server](https://cloudnative-pg.io)**: Please check the file `iac/stack.tf` for more details.
 - **[PostgreSQL Client](https://www.postgresql.org/docs/current/app-psql.html)**: Please check the file `iac/pgadmin.tf` for more details.
 - **[PGAdmin 4](https://www.pgadmin.org)**: Please check the file `iac/pgadmin.tf` for more details.
-- **[Grafana](https://www.grafana.com)**: Please check the file `iac/grafana.tf` for more details.
 
 All Terraform files use `variables` that are stored in the `iac/variables.tf`.
 

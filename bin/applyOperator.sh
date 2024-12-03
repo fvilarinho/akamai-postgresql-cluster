@@ -3,14 +3,14 @@
 # Check the dependencies of this script.
 function checkDependencies() {
   if [ -z "$KUBECONFIG" ]; then
-    echo "The cluster configuration file is not defined! Please define it first to continue!"
+    echo "The kubeconfig is not defined! Please define it first to continue!"
 
     exit 1
   fi
 }
 
-# Applies the stack operator replacing the placeholders with the correspondent environment variable value.
-function applyStackOperator() {
+# Applies the operator replacing the placeholders with the correspondent environment variable value.
+function applyOperator() {
   NAMESPACE=cnpg-system
 
   $HELM_CMD upgrade --install cnpg \
@@ -45,7 +45,7 @@ function waitUntilCompletes() {
 # Main function.
 function main() {
   checkDependencies
-  applyStackOperator
+  applyOperator
   waitUntilCompletes
 }
 

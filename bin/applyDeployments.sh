@@ -3,7 +3,7 @@
 # Check the dependencies of this script.
 function checkDependencies() {
   if [ -z "$KUBECONFIG" ]; then
-    echo "The cluster configuration file is not defined! Please define it first to continue!"
+    echo "The kubeconfig is not defined! Please define it first to continue!"
 
     exit 1
   fi
@@ -14,14 +14,14 @@ function checkDependencies() {
     exit 1
   fi
 
-  if [ -z "$NAMESPACE" ]; then
-    echo "The stack namespace is not defined! Please define it first to continue!"
+  if [ -z "$IDENTIFIER" ]; then
+    echo "The identifier is not defined! Please define it first to continue!"
 
     exit 1
   fi
 
-  if [ -z "$IDENTIFIER" ]; then
-    echo "The stack identifier is not defined! Please define it first to continue!"
+  if [ -z "$NAMESPACE" ]; then
+    echo "The namespace is not defined! Please define it first to continue!"
 
     exit 1
   fi
@@ -56,6 +56,12 @@ function checkDependencies() {
     exit 1
   fi
 
+  if [ -z "$DATABASE_BACKUP_SCHEDULE" ]; then
+    echo "The database backup schedule is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
+
   if [ -z "$NODES_COUNT" ]; then
     echo "The nodes count is not defined! Please define it first to continue!"
 
@@ -69,19 +75,20 @@ function checkDependencies() {
   fi
 }
 
-# Applies the stack deployment replacing the placeholders with the correspondent environment variable value.
-function applyStackDeployment() {
+# Applies the cluster deployments replacing the placeholders with the correspondent environment variable value.
+function applyDeployments() {
   manifestFilename="$MANIFEST_FILENAME"
 
   cp -f "$manifestFilename" "$manifestFilename".tmp
 
-  sed -i -e 's|${NAMESPACE}|'"$NAMESPACE"'|g' "$manifestFilename".tmp
   sed -i -e 's|${IDENTIFIER}|'"$IDENTIFIER"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${NAMESPACE}|'"$NAMESPACE"'|g' "$manifestFilename".tmp
   sed -i -e 's|${DATABASE_VERSION}|'"$DATABASE_VERSION"'|g' "$manifestFilename".tmp
   sed -i -e 's|${DATABASE_NAME}|'"$DATABASE_NAME"'|g' "$manifestFilename".tmp
   sed -i -e 's|${DATABASE_OWNER}|'"$DATABASE_OWNER"'|g' "$manifestFilename".tmp
   sed -i -e 's|${DATABASE_BACKUP_URL}|'"$DATABASE_BACKUP_URL"'|g' "$manifestFilename".tmp
   sed -i -e 's|${DATABASE_BACKUP_RETENTION}|'"$DATABASE_BACKUP_RETENTION"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${DATABASE_BACKUP_SCHEDULE}|'"$DATABASE_BACKUP_SCHEDULE"'|g' "$manifestFilename".tmp
   sed -i -e 's|${NODES_COUNT}|'"$NODES_COUNT"'|g' "$manifestFilename".tmp
   sed -i -e 's|${STORAGE_SIZE}|'"$STORAGE_SIZE"'|g' "$manifestFilename".tmp
 
@@ -101,18 +108,18 @@ function waitUntilCompletes() {
       break
     fi
 
-    echo "Waiting until the deployment gets ready..."
+    echo "Waiting until the cluster gets ready..."
 
     sleep 10
   done
 
-  echo "Deployment now is ready!"
+  echo "Cluster is now ready!"
 }
 
 # Main function.
 function main() {
   checkDependencies
-  applyStackDeployment
+  applyDeployments
   waitUntilCompletes
 }
 

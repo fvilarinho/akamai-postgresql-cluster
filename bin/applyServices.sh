@@ -3,7 +3,7 @@
 # Check the dependencies of this script.
 function checkDependencies() {
   if [ -z "$KUBECONFIG" ]; then
-    echo "The cluster configuration file is not defined! Please define it first to continue!"
+    echo "The kubeconfig is not defined! Please define it first to continue!"
 
     exit 1
   fi
@@ -14,27 +14,27 @@ function checkDependencies() {
     exit 1
   fi
 
-  if [ -z "$NAMESPACE" ]; then
-    echo "The stack namespace is not defined! Please define it first to continue!"
+  if [ -z "$IDENTIFIER" ]; then
+    echo "The identifier is not defined! Please define it first to continue!"
 
     exit 1
   fi
 
-  if [ -z "$IDENTIFIER" ]; then
-    echo "The stack identifier is not defined! Please define it first to continue!"
+  if [ -z "$NAMESPACE" ]; then
+    echo "The namespace is not defined! Please define it first to continue!"
 
     exit 1
   fi
 }
 
-# Applies the stack manifest replacing the placeholders with the correspondent environment variable value.
-function applyStackConfigMaps() {
+# Applies the cluster services replacing the placeholders with the correspondent environment variable value.
+function applyServices() {
   manifestFilename="$MANIFEST_FILENAME"
 
   cp -f "$manifestFilename" "$manifestFilename".tmp
 
-  sed -i -e 's|${NAMESPACE}|'"$NAMESPACE"'|g' "$manifestFilename".tmp
   sed -i -e 's|${IDENTIFIER}|'"$IDENTIFIER"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${NAMESPACE}|'"$NAMESPACE"'|g' "$manifestFilename".tmp
 
   $KUBECTL_CMD apply -f "$manifestFilename".tmp
 
@@ -44,7 +44,7 @@ function applyStackConfigMaps() {
 # Main function.
 function main() {
   checkDependencies
-  applyStackConfigMaps
+  applyServices
 }
 
 main

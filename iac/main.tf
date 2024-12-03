@@ -10,17 +10,19 @@ terraform {
     skip_region_validation      = true
     skip_metadata_api_check     = true
   }
+
+  required_providers {
+    linode = {
+      source = "linode/linode"
+    }
+
+    null = {
+      source = "hashicorp/null"
+    }
+  }
 }
 
-module "provisioning" {
-  source   = "./provisioning"
-  settings = var.settings
-}
-
-module "publish" {
-  source       = "./publish"
-  settings     = var.settings
-  clusterNodes = module.provisioning.clusterNodes
-  grafanaNode  = module.provisioning.grafanaNode
-  pgadminNode  = module.provisioning.pgadminNode
+# Akamai Cloud Computing provider definition.
+provider "linode" {
+  token = var.settings.general.token
 }

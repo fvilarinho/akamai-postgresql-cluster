@@ -3,7 +3,7 @@
 # Check the dependencies of this script.
 function checkDependencies() {
   if [ -z "$KUBECONFIG" ]; then
-    echo "The cluster configuration file is not defined! Please define it first to continue!"
+    echo "The kubeconfig is not defined! Please define it first to continue!"
 
     exit 1
   fi
@@ -14,14 +14,14 @@ function checkDependencies() {
     exit 1
   fi
 
-  if [ -z "$NAMESPACE" ]; then
-    echo "The stack namespace is not defined! Please define it first to continue!"
+  if [ -z "$IDENTIFIER" ]; then
+    echo "The identifier is not defined! Please define it first to continue!"
 
     exit 1
   fi
 
-  if [ -z "$IDENTIFIER" ]; then
-    echo "The stack identifier is not defined! Please define it first to continue!"
+  if [ -z "$NAMESPACE" ]; then
+    echo "The namespace is not defined! Please define it first to continue!"
 
     exit 1
   fi
@@ -38,32 +38,31 @@ function checkDependencies() {
     exit 1
   fi
 
-  if [ -z "$DATABASE_BACKUP_ACCESS_KEY" ] || [ -z "$DATABASE_BACKUP_SECRET_KEY" ]; then
-    echo "The database backup credentials are not defined! Please define it first to continue!"
+  if [ -z "$DATABASE_BACKUP_ACCESS_KEY" ]; then
+    echo "The database backup access key is not defined! Please define it first to continue!"
 
     exit 1
   fi
 
-  if [ -z "$DATABASE_CONNECTION_STRING" ]; then
-    echo "The database connection string is not defined! Please define it first to continue!"
+  if [ -z "$DATABASE_BACKUP_SECRET_KEY" ]; then
+    echo "The database backup secret key is not defined! Please define it first to continue!"
 
     exit 1
   fi
 }
 
-# Applies the stack manifest replacing the placeholders with the correspondent environment variable value.
-function applyStackSecrets() {
+# Applies the cluster secrets replacing the placeholders with the correspondent environment variable value.
+function applySecrets() {
   manifestFilename="$MANIFEST_FILENAME"
 
   cp -f "$manifestFilename" "$manifestFilename".tmp
 
-  sed -i -e 's|${NAMESPACE}|'"$NAMESPACE"'|g' "$manifestFilename".tmp
   sed -i -e 's|${IDENTIFIER}|'"$IDENTIFIER"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${NAMESPACE}|'"$NAMESPACE"'|g' "$manifestFilename".tmp
   sed -i -e 's|${DATABASE_USER}|'"$DATABASE_USER"'|g' "$manifestFilename".tmp
   sed -i -e 's|${DATABASE_PASSWORD}|'"$DATABASE_PASSWORD"'|g' "$manifestFilename".tmp
   sed -i -e 's|${DATABASE_BACKUP_ACCESS_KEY}|'"$DATABASE_BACKUP_ACCESS_KEY"'|g' "$manifestFilename".tmp
   sed -i -e 's|${DATABASE_BACKUP_SECRET_KEY}|'"$DATABASE_BACKUP_SECRET_KEY"'|g' "$manifestFilename".tmp
-  sed -i -e 's|${DATABASE_CONNECTION_STRING}|'"$DATABASE_CONNECTION_STRING"'|g' "$manifestFilename".tmp
 
   $KUBECTL_CMD apply -f "$manifestFilename".tmp
 
@@ -73,7 +72,7 @@ function applyStackSecrets() {
 # Main function.
 function main() {
   checkDependencies
-  applyStackSecrets
+  applySecrets
 }
 
 main

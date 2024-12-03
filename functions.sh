@@ -7,8 +7,6 @@ function showLabel() {
   elif [[ "$0" == *"deploy.sh"* ]]; then
     echo "** Deploy **"
   fi
-
-  echo
 }
 
 # Prepares the environment to execute this script.
@@ -19,6 +17,7 @@ function prepareToExecute() {
   export KUBECTL_CMD=$(which kubectl)
   export LINODE_CLI_CMD=$(which linode-cli)
   export CERTBOT_CMD=$(which certbot)
+  export JQ_CMD=$(which jq)
 }
 
 # Shows the banner.

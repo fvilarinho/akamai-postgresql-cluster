@@ -20,11 +20,11 @@ resource "linode_instance" "pgadmin" {
   tags            = concat(var.settings.general.tags, var.settings.pgadmin.tags)
   region          = var.settings.pgadmin.region
   type            = var.settings.pgadmin.type
-  image           = "linode/debian11"
+  image           = "linode/debian12"
   private_ip      = true
   root_pass       = var.settings.pgadmin.password
   authorized_keys = [ chomp(file(local.sshPublicKeyFilename)) ]
-  depends_on      = [ null_resource.applyStackLabelsAndTags ]
+  depends_on      = [ null_resource.applyDeployments ]
 }
 
 # Installs all required software for PostgreSQL admin.
@@ -39,13 +39,10 @@ resource "null_resource" "pgadminSetup" {
       "apt update",
       "apt -y upgrade",
       "hostnamectl set-hostname ${var.settings.pgadmin.identifier}",
-      "apt -y install curl wget unzip zip dnsutils net-tools htop",
+      "apt -y install curl wget unzip zip dnsutils net-tools htop postgresql-client",
       "curl https://get.docker.com | sh -",
       "systemctl enable docker",
-      "systemctl start docker",
-      "apt -y install postgresql-client",
-      "mkdir -p /root/.aws",
-      "apt -y install awscli"
+      "systemctl start docker"
     ]
   }
 
@@ -102,16 +99,6 @@ resource "null_resource" "pgadminFiles" {
 
     source      = local.certificateKeyFilename
     destination = "/root/privkey.pem"
-  }
-
-  provisioner "file" {
-    connection {
-      host        = linode_instance.pgadmin.ip_address
-      private_key = chomp(file(local.sshPrivateKeyFilename))
-    }
-
-    source      = local.backupCredentialsFilename
-    destination = "/root/.aws/credentials"
   }
 
   depends_on = [
