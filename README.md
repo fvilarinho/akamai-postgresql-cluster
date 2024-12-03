@@ -18,6 +18,7 @@ This project has the intention to demonstrate how to deploy a PostgreSQL cluster
 It automates (using **Terraform**) the provisioning of the following resources in Akamai Cloud Computing (former Linode) 
 environment:
 - **TLS Certificates**: Please check the file `iac/certificate.yaml` for more details.
+- **Credentials**: Please check the file `iac/credentials.tf` for more details.
 - **Domains (Authoritative DNS Server)**: Please check the file `iac/dns.tf` for more details.
 - **Cloud Firewall**: Please check the file `iac/firewall.tf` for more details.
 - **Node Balancers**: Please check the file `etc/services.yaml` for more details.
