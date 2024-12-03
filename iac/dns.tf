@@ -1,4 +1,4 @@
-# Required variables.
+# Required environment variables.
 locals {
   fetchNodeBalancersScriptFilename = abspath(pathexpand("../bin/fetchNodeBalancers.sh"))
 }

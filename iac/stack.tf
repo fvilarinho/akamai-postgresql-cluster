@@ -21,7 +21,7 @@ resource "null_resource" "applyOperator" {
   }
 
   provisioner "local-exec" {
-    # Required variables.
+    # Required environment variables.
     environment = {
       KUBECONFIG = local_sensitive_file.kubeconfig[each.key].filename
     }
@@ -44,7 +44,7 @@ resource "null_resource" "applyNamespaces" {
   }
 
   provisioner "local-exec" {
-    # Required variables.
+    # Required environment variables.
     environment = {
       KUBECONFIG = local_sensitive_file.kubeconfig[each.key].filename
       NAMESPACE  = each.value.namespace
@@ -73,7 +73,7 @@ resource "null_resource" "applySecrets" {
   }
 
   provisioner "local-exec" {
-    # Required variables.
+    # Required environment variables.
     environment = {
       KUBECONFIG                 = local_sensitive_file.kubeconfig[each.key].filename
       MANIFEST_FILENAME          = local.secretsManifestFilename
@@ -107,7 +107,7 @@ resource "null_resource" "applyServices" {
   }
 
   provisioner "local-exec" {
-    # Required variables.
+    # Required environment variables.
     environment = {
       KUBECONFIG        = local_sensitive_file.kubeconfig[each.key].filename
       MANIFEST_FILENAME = local.servicesManifestFilename
@@ -142,7 +142,7 @@ resource "null_resource" "applyDeployments" {
   }
 
   provisioner "local-exec" {
-    # Required variables.
+    # Required environment variables.
     environment = {
       KUBECONFIG                 = local_sensitive_file.kubeconfig[each.key].filename
       MANIFEST_FILENAME          = local.deploymentsManifestFilename

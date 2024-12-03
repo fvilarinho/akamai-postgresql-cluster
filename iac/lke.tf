@@ -4,7 +4,7 @@ resource "linode_lke_cluster" "default" {
 
   k8s_version = "1.31"
   label       = "${each.key}-${each.value.namespace}"
-  tags        = concat(var.settings.general.tags, [ each.value.namespace], [ each.key ])
+  tags        = concat(var.settings.general.tags, [ each.key ])
   region      = each.value.region
 
   control_plane {

@@ -20,7 +20,7 @@ resource "linode_firewall" "default" {
   for_each = { for cluster in var.settings.clusters : cluster.identifier => cluster }
 
   label           = "${each.key}-${each.value.namespace}-firewall"
-  tags            = concat(var.settings.general.tags, [ each.value.namespace], [ each.key ])
+  tags            = concat(var.settings.general.tags, [ each.key ])
   inbound_policy  = "DROP"
   outbound_policy = "ACCEPT"
 

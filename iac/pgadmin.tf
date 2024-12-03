@@ -1,4 +1,4 @@
-# Required variables.
+# Required environment variables.
 locals {
   pgadminNginxConfFilename     = abspath(pathexpand("../etc/pgadmin/nginx/conf.d/default.conf"))
   pgadminDockerComposeFilename = abspath(pathexpand("../etc/pgadmin/docker-compose.yaml"))

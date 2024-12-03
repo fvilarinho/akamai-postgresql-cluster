@@ -8,7 +8,7 @@ locals {
 # Issues the certificate using Certbot.
 resource "null_resource" "certificateIssuance" {
   provisioner "local-exec" {
-    # Required variables.
+    # Required environment variables.
     environment = {
       CERTIFICATE_ISSUANCE_PROPAGATION_DELAY = 600 // in seconds.
       DOMAIN                                 = var.settings.general.domain

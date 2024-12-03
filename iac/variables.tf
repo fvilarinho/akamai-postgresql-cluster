@@ -5,7 +5,7 @@ variable "settings" {
       email  = "<your-email>"
       domain = "<your-domain>"
       token  = "<token>"
-      tags   = [ "demo" ]
+      tags   = [ "demo", "postgresql" ]
     }
 
     # Definition of the PostgreSQL admin instance.

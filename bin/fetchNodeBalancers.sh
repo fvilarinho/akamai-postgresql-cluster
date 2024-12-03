@@ -2,7 +2,7 @@
 
 # Checks the dependencies of this script.
 function checkDependencies() {
-  KUBECONFIG=$1
+  export KUBECONFIG=$1
 
   if [ -z "$KUBECONFIG" ]; then
     echo "The kubeconfig is not defined! Please define it first to continue!"
@@ -10,7 +10,7 @@ function checkDependencies() {
     exit 1
   fi
 
-  NAMESPACE=$2
+  export NAMESPACE=$2
 
   if [ -z "$NAMESPACE" ]; then
     echo "The namespace is not defined! Please define it first to continue!"
