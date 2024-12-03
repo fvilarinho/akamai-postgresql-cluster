@@ -35,6 +35,7 @@ resource "null_resource" "applyTags" {
   depends_on = [
     linode_lke_cluster.default,
     null_resource.applyServices,
+    null_resource.applyDeployments,
     data.external.fetchNodeBalancers
   ]
 }
