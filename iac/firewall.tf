@@ -134,7 +134,7 @@ resource "linode_firewall" "nodeBalancers" {
 
   inbound {
     action   = "ACCEPT"
-    label    = "allowed-ips"
+    label    = "allow-external-ips"
     protocol = "TCP"
     ipv6     = concat(each.value.allowedIps.ipv6, [ "::1/128" ])
     ipv4     = concat(each.value.allowedIps.ipv4,
