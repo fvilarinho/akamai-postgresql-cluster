@@ -16,6 +16,10 @@ variable "settings" {
       region     = "<region>"
       user       = "<user>"
       password   = "<password>"
+      allowedIps = {
+        ipv4 = [ "0.0.0.0/0" ]
+        ipv6 = []
+      }
     }
 
     # Definition of the PostgreSQL cluster.
