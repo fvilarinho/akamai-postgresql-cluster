@@ -113,8 +113,15 @@ resource "linode_firewall" "clusterNodes" {
 
   inbound {
     action   = "ACCEPT"
-    label    = "allow-intracluster-traffic"
+    label    = "allow-intracluster-tcp-traffic"
     protocol = "TCP"
+    ipv4     = flatten([ for node in data.linode_instances.clusterNodes[each.key].instances : [ "${node.ip_address}/32", "${node.private_ip_address}/32" ]])
+  }
+
+  inbound {
+    action   = "ACCEPT"
+    label    = "allow-intracluster-udp-traffic"
+    protocol = "UDP"
     ipv4     = flatten([ for node in data.linode_instances.clusterNodes[each.key].instances : [ "${node.ip_address}/32", "${node.private_ip_address}/32" ]])
   }
 
