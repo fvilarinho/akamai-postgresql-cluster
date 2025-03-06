@@ -36,6 +36,7 @@ resource "null_resource" "pgadminSetup" {
     }
 
     inline = [
+      "export DEBIAN_FRONTEND=noninteractive",
       "apt update",
       "apt -y upgrade",
       "hostnamectl set-hostname ${var.settings.pgadmin.identifier}",
