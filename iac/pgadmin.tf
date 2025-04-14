@@ -104,8 +104,6 @@ resource "null_resource" "pgadminFiles" {
 
   depends_on = [
     null_resource.pgadminSetup,
-    local_sensitive_file.certificate,
-    local_sensitive_file.certificateKey,
     local_sensitive_file.pgadminEnvironment,
     null_resource.certificateIssuance
   ]

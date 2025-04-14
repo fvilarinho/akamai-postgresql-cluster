@@ -104,8 +104,6 @@ resource "null_resource" "grafanaFiles" {
 
   depends_on = [
     null_resource.grafanaSetup,
-    local_sensitive_file.certificate,
-    local_sensitive_file.certificateKey,
     local_sensitive_file.grafanaEnvironment,
     null_resource.certificateIssuance
   ]
