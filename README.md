@@ -28,6 +28,7 @@ environment:
 - **[PostgreSQL Server](https://cloudnative-pg.io)**: Please check the file `iac/stack.tf` for more details.
 - **[PostgreSQL Client](https://www.postgresql.org/docs/current/app-psql.html)**: Please check the file `iac/pgadmin.tf` for more details.
 - **[PGAdmin 4](https://www.pgadmin.org)**: Please check the file `iac/pgadmin.tf` for more details.
+- **[Grafana 11](https://www.grafana.com)**: Please check the file `iac/grafana.tf` for more details.
 
 All Terraform files use `variables` that are stored in the `iac/variables.tf`.
 
