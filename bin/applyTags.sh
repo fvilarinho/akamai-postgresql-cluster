@@ -32,6 +32,12 @@ function checkDependencies() {
     exit 1
   fi
 
+  if [ -z "$MONITORING_NODE_BALANCER" ]; then
+    echo "The monitoring node balancer is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
+
   if [ -z "$TAGS" ]; then
     echo "The identifier is not defined! Please define it first to continue!"
 
@@ -55,6 +61,7 @@ function applyTagsInNodeBalancers() {
 
   eval "$LINODE_CLI_CMD nodebalancers update $TAGS_PARAMS --tags primary $PRIMARY_NODE_BALANCER > /dev/null"
   eval "$LINODE_CLI_CMD nodebalancers update $TAGS_PARAMS --tags replicas $REPLICAS_NODE_BALANCER > /dev/null"
+  eval "$LINODE_CLI_CMD nodebalancers update $TAGS_PARAMS --tags monitoring $MONITORING_NODE_BALANCER > /dev/null"
 }
 
 # Applies the tags in cluster nodes.

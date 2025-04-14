@@ -28,7 +28,7 @@ resource "linode_domain_record" "primary" {
   for_each = { for cluster in var.settings.clusters : cluster.identifier => cluster }
 
   domain_id   = linode_domain.default.id
-  name        = "${each.key}-${each.value.namespace}-primary.${var.settings.general.domain}"
+  name        = "${each.key}-primary.${var.settings.general.domain}"
   record_type = "CNAME"
   target      = data.external.fetchNodeBalancers[each.key].result.primaryHostname
   ttl_sec     = 30
@@ -43,9 +43,25 @@ resource "linode_domain_record" "replicas" {
   for_each = { for cluster in var.settings.clusters : cluster.identifier => cluster }
 
   domain_id   = linode_domain.default.id
-  name        = "${each.key}-${each.value.namespace}-replicas.${var.settings.general.domain}"
+  name        = "${each.key}-replicas.${var.settings.general.domain}"
   record_type = "CNAME"
   target      = data.external.fetchNodeBalancers[each.key].result.replicasHostname
+  ttl_sec     = 30
+
+  depends_on  = [
+    linode_domain.default,
+    data.external.fetchNodeBalancers
+  ]
+}
+
+# Definition of the default DNS entry for the monitoring instances.
+resource "linode_domain_record" "monitoring" {
+  for_each = { for cluster in var.settings.clusters : cluster.identifier => cluster }
+
+  domain_id   = linode_domain.default.id
+  name        = "${each.key}-monitoring.${var.settings.general.domain}"
+  record_type = "CNAME"
+  target      = data.external.fetchNodeBalancers[each.key].result.monitoringHostname
   ttl_sec     = 30
 
   depends_on  = [
@@ -65,5 +81,19 @@ resource "linode_domain_record" "pgadmin" {
   depends_on  = [
     linode_domain.default,
     linode_instance.pgadmin
+  ]
+}
+
+# Definition of the default DNS entry for the Grafana instance.
+resource "linode_domain_record" "grafana" {
+  domain_id   = linode_domain.default.id
+
+  name        = "${var.settings.grafana.identifier}.${var.settings.general.domain}"
+  record_type = "A"
+  target      = linode_instance.grafana.ip_address
+  ttl_sec     = 30
+  depends_on  = [
+    linode_domain.default,
+    linode_instance.grafana
   ]
 }

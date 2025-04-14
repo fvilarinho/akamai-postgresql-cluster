@@ -22,10 +22,25 @@ variable "settings" {
       }
     }
 
+    # Definition of the Grafana instance.
+    grafana = {
+      identifier = "grafana"
+      tags       = [ "dataviz" ]
+      type       = "g6-standard-2"
+      region     = "<region>"
+      user       = "<user>"
+      password   = "<password>"
+      allowedIps = {
+        ipv4 = [ "0.0.0.0/0" ]
+        ipv6 = []
+      }
+    }
+
     # Definition of the PostgreSQL cluster.
     clusters = [
       {
-        identifier = "customer1"
+        identifier = "customer1-db"
+        tags       = [ "customer1" ]
         namespace  = "postgresql"
         region     = "<region>"
 

@@ -2,7 +2,7 @@
 resource "linode_object_storage_bucket" "backup" {
   for_each = { for cluster in var.settings.clusters : cluster.identifier => cluster }
 
-  label  = "${each.key}-${each.value.namespace}-backup"
+  label  = "${each.key}-backup"
   region = each.value.region
 }
 
@@ -10,10 +10,10 @@ resource "linode_object_storage_bucket" "backup" {
 resource "linode_object_storage_key" "backup" {
   for_each = { for cluster in var.settings.clusters : cluster.identifier => cluster }
 
-  label = "${each.key}-${each.value.namespace}-backup"
+  label = "${each.key}-backup"
 
   bucket_access {
-    bucket_name = "${each.key}-${each.value.namespace}-backup"
+    bucket_name = "${each.key}-backup"
     region      = each.value.region
     permissions = "read_write"
   }

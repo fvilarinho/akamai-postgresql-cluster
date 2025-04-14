@@ -45,7 +45,17 @@ function fetchNodeBalancers() {
           REPLICAS_ID=$($LINODE_CLI_CMD nodebalancers list --json | $JQ_CMD ".[]|select(.hostname == \"$REPLICAS_HOSTNAME\")|.id")
 
           if [ -n "$REPLICAS_ID" ]; then
-            break
+            MONITORING_HOSTNAME=$($KUBECTL_CMD get service monitoring-server \
+                                             -n "$NAMESPACE" \
+                                             -o jsonpath='{.status.loadBalancer.ingress[].hostname}')
+
+            if [ -n "$MONITORING_HOSTNAME" ]; then
+              MONITORING_ID=$($LINODE_CLI_CMD nodebalancers list --json | $JQ_CMD ".[]|select(.hostname == \"$MONITORING_HOSTNAME\")|.id")
+
+              if [ -n "$MONITORING_ID" ]; then
+                break
+              fi
+            fi
           fi
         fi
       fi
@@ -55,7 +65,7 @@ function fetchNodeBalancers() {
   done
 
   # Returns the fetched hostnames.
-  echo "{\"primaryId\": \"$PRIMARY_ID\", \"primaryHostname\": \"$PRIMARY_HOSTNAME\", \"replicasId\": \"$REPLICAS_ID\", \"replicasHostname\": \"$REPLICAS_HOSTNAME\"}"
+  echo "{\"primaryId\": \"$PRIMARY_ID\", \"primaryHostname\": \"$PRIMARY_HOSTNAME\", \"replicasId\": \"$REPLICAS_ID\", \"replicasHostname\": \"$REPLICAS_HOSTNAME\", \"monitoringId\": \"$MONITORING_ID\", \"monitoringHostname\": \"$MONITORING_HOSTNAME\"}"
 }
 
 # Main function.

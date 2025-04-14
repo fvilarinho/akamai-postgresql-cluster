@@ -58,3 +58,82 @@ spec:
   backupOwnerReference: self
   cluster:
     name: server
+---
+# Definition of the cluster monitoring.
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  namespace: ${NAMESPACE}
+  name: monitoring-agent
+
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+
+  selector:
+    matchLabels:
+      app: monitoring-agent
+
+  template:
+    metadata:
+      labels:
+        app: monitoring-agent
+
+    spec:
+      restartPolicy: Always
+
+      containers:
+        - name: monitoring-agent
+          image: prometheuscommunity/postgres-exporter:v0.17.1
+          imagePullPolicy: Always
+          env:
+            - name: DATA_SOURCE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: monitoring-secret
+                  key: url
+          ports:
+            - containerPort: 9187
+---
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  namespace: ${NAMESPACE}
+  name: monitoring-server
+
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+
+  selector:
+    matchLabels:
+      app: monitoring-server
+
+  template:
+    metadata:
+      labels:
+        app: monitoring-server
+
+    spec:
+      restartPolicy: Always
+
+      containers:
+        - name: monitoring-server
+          image: prom/prometheus:v3.2.1
+          imagePullPolicy: Always
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: monitoring-server-settings
+              mountPath: /etc/prometheus
+
+      volumes:
+        - name: monitoring-server-settings
+          configMap:
+            name: monitoring-server-settings

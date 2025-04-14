@@ -2,10 +2,12 @@
 locals {
   applyOperatorScriptFilename    = abspath(pathexpand("../bin/applyOperator.sh"))
   applyNamespacesScriptFilename  = abspath(pathexpand("../bin/applyNamespaces.sh"))
+  applyConfigMapsScriptFilename  = abspath(pathexpand("../bin/applyConfigMaps.sh"))
   applySecretsScriptFilename     = abspath(pathexpand("../bin/applySecrets.sh"))
   applyServicesScriptFilename    = abspath(pathexpand("../bin/applyServices.sh"))
   applyDeploymentsScriptFilename = abspath(pathexpand("../bin/applyDeployments.sh"))
 
+  configMapsManifestFilename     = abspath(pathexpand("../etc/configMaps.yaml"))
   secretsManifestFilename        = abspath(pathexpand("../etc/secrets.yaml"))
   servicesManifestFilename       = abspath(pathexpand("../etc/services.yaml"))
   deploymentsManifestFilename    = abspath(pathexpand("../etc/deployments.yaml"))
@@ -70,6 +72,7 @@ resource "null_resource" "applySecrets" {
     databasePassword        = base64encode(each.value.database.password)
     databaseBackupAccessKey = base64encode(linode_object_storage_key.backup[each.key].access_key)
     databaseBackupSecretKey = base64encode(linode_object_storage_key.backup[each.key].secret_key)
+    databaseMonitoringUrl   = base64encode("postgresql://${each.value.database.user}:${each.value.database.password}@primary:5432/${each.value.database.name}?sslmode=disable")
   }
 
   provisioner "local-exec" {
@@ -83,10 +86,41 @@ resource "null_resource" "applySecrets" {
       DATABASE_PASSWORD          = base64encode(each.value.database.password)
       DATABASE_BACKUP_ACCESS_KEY = base64encode(linode_object_storage_key.backup[each.key].access_key)
       DATABASE_BACKUP_SECRET_KEY = base64encode(linode_object_storage_key.backup[each.key].secret_key)
+      DATABASE_MONITORING_URL    = base64encode("postgresql://${each.value.database.user}:${each.value.database.password}@primary:5432/${each.value.database.name}?sslmode=disable")
     }
 
     quiet   = true
     command = local.applySecretsScriptFilename
+  }
+
+  depends_on = [
+    null_resource.applyNamespaces,
+    linode_object_storage_key.backup
+  ]
+}
+
+# Applies the clusters' config maps.
+resource "null_resource" "applyConfigMaps" {
+  for_each = { for cluster in var.settings.clusters : cluster.identifier => cluster }
+
+  # Execute when detected changes.
+  triggers = {
+    hash       = "${filemd5(local.applyConfigMapsScriptFilename)}|${filemd5(local.configMapsManifestFilename)}"
+    identifier = each.key
+    namespace  = each.value.namespace
+  }
+
+  provisioner "local-exec" {
+    # Required environment variables.
+    environment = {
+      KUBECONFIG        = local_sensitive_file.kubeconfig[each.key].filename
+      MANIFEST_FILENAME = local.configMapsManifestFilename
+      IDENTIFIER        = each.key
+      NAMESPACE         = each.value.namespace
+    }
+
+    quiet   = true
+    command = local.applyConfigMapsScriptFilename
   }
 
   depends_on = [
@@ -119,7 +153,7 @@ resource "null_resource" "applyServices" {
     command = local.applyServicesScriptFilename
   }
 
-  depends_on = [ null_resource.applySecrets ]
+  depends_on = [ null_resource.applyNamespaces ]
 }
 
 # Applies the clusters' deployments.
@@ -163,6 +197,8 @@ resource "null_resource" "applyDeployments" {
   }
 
   depends_on = [
+    null_resource.applyConfigMaps,
+    null_resource.applySecrets,
     null_resource.applyServices,
     linode_object_storage_bucket.backup
   ]

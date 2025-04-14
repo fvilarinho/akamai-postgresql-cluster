@@ -118,10 +118,7 @@ resource "null_resource" "startPgAdmin" {
       private_key = chomp(file(local.sshPrivateKeyFilename))
     }
 
-    inline = [
-      "cd /root; source /root/.env",
-      "docker compose up -d"
-    ]
+    inline = [ "docker compose up -d" ]
   }
 
   depends_on = [ null_resource.pgadminFiles ]

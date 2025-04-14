@@ -49,6 +49,12 @@ function checkDependencies() {
 
     exit 1
   fi
+
+  if [ -z "$DATABASE_MONITORING_URL" ]; then
+    echo "The database monitoring url is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
 }
 
 # Applies the cluster secrets replacing the placeholders with the correspondent environment variable value.
@@ -63,6 +69,7 @@ function applySecrets() {
   sed -i -e 's|${DATABASE_PASSWORD}|'"$DATABASE_PASSWORD"'|g' "$manifestFilename".tmp
   sed -i -e 's|${DATABASE_BACKUP_ACCESS_KEY}|'"$DATABASE_BACKUP_ACCESS_KEY"'|g' "$manifestFilename".tmp
   sed -i -e 's|${DATABASE_BACKUP_SECRET_KEY}|'"$DATABASE_BACKUP_SECRET_KEY"'|g' "$manifestFilename".tmp
+  sed -i -e 's|${DATABASE_MONITORING_URL}|'"$DATABASE_MONITORING_URL"'|g' "$manifestFilename".tmp
 
   $KUBECTL_CMD apply -f "$manifestFilename".tmp
 

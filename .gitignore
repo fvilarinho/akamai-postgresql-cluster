@@ -1,6 +1,6 @@
 /.idea/
 /etc/*.kubeconfig
-/etc/*.nodebalancers
+/etc/grafana/.env
 /etc/pgadmin/.env
 /etc/tls/certs/fullchain.pem
 /etc/tls/private/privkey.pem
