@@ -106,7 +106,8 @@ resource "null_resource" "grafanaFiles" {
     null_resource.grafanaSetup,
     local_sensitive_file.certificate,
     local_sensitive_file.certificateKey,
-    local_sensitive_file.grafanaEnvironment
+    local_sensitive_file.grafanaEnvironment,
+    null_resource.certificateIssuance
   ]
 }
 

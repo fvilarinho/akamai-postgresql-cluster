@@ -106,7 +106,8 @@ resource "null_resource" "pgadminFiles" {
     null_resource.pgadminSetup,
     local_sensitive_file.certificate,
     local_sensitive_file.certificateKey,
-    local_sensitive_file.pgadminEnvironment
+    local_sensitive_file.pgadminEnvironment,
+    null_resource.certificateIssuance
   ]
 }
 
