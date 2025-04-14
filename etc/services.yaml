@@ -33,6 +33,7 @@ spec:
     - port: 5432
       targetPort: 5432
 ---
+# Definition of cluster monitoring services (agent & server).
 apiVersion: v1
 kind: Service
 

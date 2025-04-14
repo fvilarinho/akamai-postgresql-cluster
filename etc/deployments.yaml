@@ -59,7 +59,7 @@ spec:
   cluster:
     name: server
 ---
-# Definition of the cluster monitoring.
+# Definition of the cluster monitoring agent.
 apiVersion: apps/v1
 kind: Deployment
 
@@ -97,6 +97,7 @@ spec:
           ports:
             - containerPort: 9187
 ---
+# Definition of the cluster monitoring server.
 apiVersion: apps/v1
 kind: Deployment
 

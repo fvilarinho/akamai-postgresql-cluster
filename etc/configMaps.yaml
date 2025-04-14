@@ -1,3 +1,4 @@
+# Definition of the cluster monitoring settings.
 apiVersion: v1
 kind: ConfigMap
 
