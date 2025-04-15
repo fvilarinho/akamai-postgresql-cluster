@@ -11,7 +11,7 @@ function showLabel() {
 
 # Prepares the environment to execute this script.
 function prepareToExecute() {
-  # Required binaries
+  # Required binaries.
   export TERRAFORM_CMD=$(which terraform)
   export HELM_CMD=$(which helm)
   export KUBECTL_CMD=$(which kubectl)
