@@ -6,3 +6,4 @@
 /etc/tls/private/privkey.pem
 /iac/.terraform*
 /iac/terraform.tfvars
+/etc/pgadmin/*.backupCredentials

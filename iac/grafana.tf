@@ -59,7 +59,7 @@ resource "null_resource" "grafanaFiles" {
     }
 
     source      = local.grafanaEnvironmentFilename
-    destination = "/root/.env"
+    destination = "/root/${basename(local.grafanaEnvironmentFilename)}"
   }
 
   provisioner "file" {
@@ -69,7 +69,7 @@ resource "null_resource" "grafanaFiles" {
     }
 
     source      = local.grafanaDockerComposeFilename
-    destination = "/root/docker-compose.yaml"
+    destination = "/root/${basename(local.grafanaDockerComposeFilename)}"
   }
 
   provisioner "file" {
@@ -79,7 +79,7 @@ resource "null_resource" "grafanaFiles" {
     }
 
     source      = local.grafanaNginxConfFilename
-    destination = "/root/default.conf"
+    destination = "/root/${basename(local.grafanaNginxConfFilename)}"
   }
 
   provisioner "file" {
@@ -89,7 +89,7 @@ resource "null_resource" "grafanaFiles" {
     }
 
     source      = local.certificateFilename
-    destination = "/root/fullchain.pem"
+    destination = "/root/${basename(local.certificateFilename)}"
   }
 
   provisioner "file" {
@@ -99,7 +99,7 @@ resource "null_resource" "grafanaFiles" {
     }
 
     source      = local.certificateKeyFilename
-    destination = "/root/privkey.pem"
+    destination = "/root/${basename(local.certificateKeyFilename)}"
   }
 
   depends_on = [

@@ -40,7 +40,8 @@ resource "null_resource" "pgadminSetup" {
       "apt update",
       "apt -y upgrade",
       "hostnamectl set-hostname ${var.settings.pgadmin.identifier}",
-      "apt -y install curl wget unzip zip dnsutils net-tools htop postgresql-client",
+      "apt -y install curl wget unzip zip dnsutils net-tools htop postgresql-client awscli",
+      "mkdir -p /root/.aws",
       "curl https://get.docker.com | sh -",
       "systemctl enable docker",
       "systemctl start docker"
@@ -59,7 +60,7 @@ resource "null_resource" "pgadminFiles" {
     }
 
     source      = local.pgadminEnvironmentFilename
-    destination = "/root/.env"
+    destination = "/root/${basename(local.pgadminEnvironmentFilename)}"
   }
 
   provisioner "file" {
@@ -69,7 +70,7 @@ resource "null_resource" "pgadminFiles" {
     }
 
     source      = local.pgadminDockerComposeFilename
-    destination = "/root/docker-compose.yaml"
+    destination = "/root/${basename(local.pgadminDockerComposeFilename)}"
   }
 
   provisioner "file" {
@@ -79,7 +80,7 @@ resource "null_resource" "pgadminFiles" {
     }
 
     source      = local.pgadminNginxConfFilename
-    destination = "/root/default.conf"
+    destination = "/root/${basename(local.pgadminNginxConfFilename)}"
   }
 
   provisioner "file" {
@@ -89,7 +90,7 @@ resource "null_resource" "pgadminFiles" {
     }
 
     source      = local.certificateFilename
-    destination = "/root/fullchain.pem"
+    destination = "/root/${basename(local.certificateFilename)}"
   }
 
   provisioner "file" {
@@ -99,7 +100,7 @@ resource "null_resource" "pgadminFiles" {
     }
 
     source      = local.certificateKeyFilename
-    destination = "/root/privkey.pem"
+    destination = "/root/${basename(local.certificateKeyFilename)}"
   }
 
   depends_on = [
@@ -109,16 +110,35 @@ resource "null_resource" "pgadminFiles" {
   ]
 }
 
+resource "null_resource" "pgadminBackupCredentials" {
+  for_each = { for cluster in var.settings.clusters : cluster.identifier => cluster }
+
+  provisioner "file" {
+    connection {
+      host        = linode_instance.pgadmin.ip_address
+      private_key = chomp(file(local.sshPrivateKeyFilename))
+    }
+
+    source      = local_sensitive_file.backupCredentials[each.key].filename
+    destination = "/root/${basename(local_sensitive_file.backupCredentials[each.key].filename)}"
+  }
+
+  depends_on = [
+    local_sensitive_file.backupCredentials,
+    null_resource.pgadminFiles
+  ]
+}
+
 # Starts the PostgreSQL admin.
 resource "null_resource" "startPgAdmin" {
   provisioner "remote-exec" {
     connection {
-      host = linode_instance.pgadmin.ip_address
+      host        = linode_instance.pgadmin.ip_address
       private_key = chomp(file(local.sshPrivateKeyFilename))
     }
 
     inline = [ "docker compose up -d" ]
   }
 
-  depends_on = [ null_resource.pgadminFiles ]
+  depends_on = [ null_resource.pgadminBackupCredentials ]
 }
