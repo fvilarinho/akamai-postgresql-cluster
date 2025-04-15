@@ -4,6 +4,7 @@ locals {
   sshPublicKeyFilename  = abspath(pathexpand("~/.ssh/id_rsa.pub"))
 }
 
+# Creates the backup credentials file.
 resource "local_sensitive_file" "backupCredentials" {
   for_each = { for cluster in var.settings.clusters : cluster.identifier => cluster }
 
