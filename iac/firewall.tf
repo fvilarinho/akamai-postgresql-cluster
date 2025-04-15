@@ -3,7 +3,7 @@ data "http" "myIp" {
   url = "https://ipinfo.io"
 }
 
-# Fetches the nodes to be protected.
+# Fetches the clusters' nodes to be protected.
 data "linode_instances" "clusterNodes" {
   for_each = { for cluster in var.settings.clusters : cluster.identifier => cluster }
 
@@ -15,7 +15,7 @@ data "linode_instances" "clusterNodes" {
   depends_on = [ linode_lke_cluster.default ]
 }
 
-# Definition of the firewall rules.
+# Definition of the firewall rules for the clusters' nodes.
 resource "linode_firewall" "clusterNodes" {
   for_each = { for cluster in var.settings.clusters : cluster.identifier => cluster }
 
@@ -130,7 +130,7 @@ resource "linode_firewall" "clusterNodes" {
   depends_on = [ data.linode_instances.clusterNodes ]
 }
 
-# Definition of the firewall rules.
+# Definition of the firewall rules for the clusters' node balancers.
 resource "linode_firewall" "nodeBalancers" {
   for_each = { for cluster in var.settings.clusters : cluster.identifier => cluster }
 
@@ -169,6 +169,7 @@ resource "linode_firewall" "nodeBalancers" {
   ]
 }
 
+# Definition of the firewall rules for the PostgreSQL admin.
 resource "linode_firewall" "pgadmin" {
   label           = "${var.settings.pgadmin.identifier}-fw"
   tags            = concat(var.settings.general.tags, var.settings.pgadmin.tags)
@@ -226,6 +227,7 @@ resource "linode_firewall" "pgadmin" {
   ]
 }
 
+# Definition of the firewall rules for the Grafana.
 resource "linode_firewall" "grafana" {
   label           = "${var.settings.grafana.identifier}-fw"
   tags            = concat(var.settings.general.tags, var.settings.grafana.tags)

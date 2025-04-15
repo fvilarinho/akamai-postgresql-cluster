@@ -70,7 +70,7 @@ resource "linode_domain_record" "monitoring" {
   ]
 }
 
-# Definition of the default DNS entry for the PostgreSQL admin instance.
+# Definition of the default DNS entry for the PostgreSQL admin.
 resource "linode_domain_record" "pgadmin" {
   domain_id   = linode_domain.default.id
 
@@ -84,7 +84,7 @@ resource "linode_domain_record" "pgadmin" {
   ]
 }
 
-# Definition of the default DNS entry for the Grafana instance.
+# Definition of the default DNS entry for the Grafana.
 resource "linode_domain_record" "grafana" {
   domain_id   = linode_domain.default.id
 

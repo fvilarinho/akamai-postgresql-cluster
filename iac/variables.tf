@@ -8,7 +8,7 @@ variable "settings" {
       tags   = [ "demo", "postgresql" ]
     }
 
-    # Definition of the PostgreSQL admin instance.
+    # Definition of the PostgreSQL admin.
     pgadmin = {
       identifier = "pgadmin"
       tags       = [ "admin" ]
@@ -22,7 +22,7 @@ variable "settings" {
       }
     }
 
-    # Definition of the Grafana instance.
+    # Definition of the Grafana.
     grafana = {
       identifier = "grafana"
       tags       = [ "dataviz" ]

@@ -14,7 +14,7 @@ export PGADMIN_PASSWORD=${var.settings.pgadmin.password}
 EOT
 }
 
-# Definition of the PostgreSQL admin instance.
+# Definition of the PostgreSQL admin.
 resource "linode_instance" "pgadmin" {
   label           = var.settings.pgadmin.identifier
   tags            = concat(var.settings.general.tags, var.settings.pgadmin.tags)
