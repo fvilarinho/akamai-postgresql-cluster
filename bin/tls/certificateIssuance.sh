@@ -25,6 +25,18 @@ function checkDependencies() {
 
     exit 1
   fi
+
+  if [ -z "$CERTIFICATE_FILENAME" ]; then
+    echo "The certificate filename is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
+
+  if [ -z "$CERTIFICATE_KEY_FILENAME" ]; then
+    echo "The certificate key filename is not defined! Please define it first to continue!"
+
+    exit 1
+  fi
 }
 
 # Issue the certificate using Certbot. The validation will be in the Linode DNS.
